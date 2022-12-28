@@ -19,7 +19,7 @@ target_price = float(input('What is your target price?'))
 for stock in users_stocks:
     url += stock
 
-    # Send requests to google finance
+    # Requests to google finance
     req = requests.get(url)
 
     # Parse the URL with Beautiful Soup
@@ -27,8 +27,7 @@ for stock in users_stocks:
 
     # Find the name of the stock. Use a try/ except statement to see if the stock is listed on google finance. If not, 'I couldnt find that will be printed to the user.'
     try:
-        name = result.find('div', {'class': 'zzDege'})
-        name = name.string
+        name = (result.find('div', {'class': 'zzDege'})).string
         print(name)
         print(url)
 
@@ -36,8 +35,7 @@ for stock in users_stocks:
         print('I couldnt find that.')
 
     # Find the Price of the stock.
-    price = result.find('div', {'class': 'YMlKec fxKbKc'})
-    price = price.string
+    price = (result.find('div', {'class': 'YMlKec fxKbKc'})).string
     print(price)
     pr = float(price[1:])
 
@@ -101,6 +99,4 @@ for stock in users_stocks:
             ")''')
 
         conn.commit()
-
-    # URL Reset at end of loop
-    url = 'https://www.google.com/finance?q='
+        
