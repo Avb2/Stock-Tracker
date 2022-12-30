@@ -54,12 +54,12 @@ for x in stocks_split:
             # Creates a table called watchlist, if one isnt created already.
             try:
                 c.execute('''CREATE TABLE Watchlist
-                    ("
+                    (
                     Name,
                     Date,
                     Time,
                     Price
-                    ")''')
+                    )''')
 
 
             except:
@@ -67,12 +67,12 @@ for x in stocks_split:
 
             # Add values to the database
             c.execute(f'''INSERT INTO Watchlist VALUES
-                ("
-                {name},
-                {date},                    
-                {timestamp},
-                ${price_float}
-                ")''')
+                (
+                "{name}",
+                "{date}",                    
+                "{timestamp}",
+                "${price_float}"
+                )''')
 
             conn.commit()
 
@@ -83,12 +83,12 @@ for x in stocks_split:
     try:
         # Create table for the stock
         c.execute(f'''CREATE TABLE {x}
-            ("
+            (
             Name,
             Date,    
             Time,
             Price
-            ")''')
+            )''')
 
         conn.commit()
 
@@ -97,12 +97,12 @@ for x in stocks_split:
 
     # Add values to the database
     c.execute(f'''INSERT INTO {x} VALUES
-        ("
-        {name},
-        {date},
-        {timestamp},
-        ${price_float}
-        ")''')
+        (
+        "{name}",
+        "{date}",
+        "{timestamp}",
+        "${price_float}"
+        )''')
 
     conn.commit()
 
