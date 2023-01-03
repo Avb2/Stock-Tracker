@@ -15,11 +15,9 @@ url = 'https://www.google.com/finance?q='
 conn = sqlite3.connect('data-stocks.db')
 c = conn.cursor()
 
-
-
 # 'Stock' Label for the entry widget
-stock_label = Label(root, text='Stocks ')
-stock_label.grid(row=0, column=0)
+label_stock = Label(root, text='Stocks ')
+label_stock.grid(row=0, column=0)
 
 # Input the stocks into the Entry widget labeled 'Stocks'
 users_stocks = Entry(root)
@@ -35,10 +33,24 @@ target_price.grid(row=1, column=1)
 
 # Enter Button, when clicked the inputs will be collected, and separated, then web scraped from 'Google.com/finance' using BeautifulSoup4. The values will then be added to the database.
 button_enter = Button(root, text='Enter', command=lambda: search_it(users_stocks, target_price))
-button_enter.grid(row=1, column=2)
+button_enter.grid(row=0, column=2)
+
+# Show Button
+button_show = Button(root, text='Show')
+button_show.grid(row=1, column=2)
 
 
 def search_it(STOCKS, TARGETPRICE):
+    # Next button which allows users to see the next stock
+    button_next = Button(root, text='Next')
+    button_next.grid(row=2, column=2)
+
+    # Scraped stock names are added to this list
+    scraped_stock_name = []
+
+    # Scraped prices are added to this list
+    scraped_stock_price = []
+
     # User inputs stocks they want to search for, the input is then split
     users_stocks = str(STOCKS.get())
     stocks_split = users_stocks.split(',')
@@ -49,8 +61,44 @@ def search_it(STOCKS, TARGETPRICE):
     target_price = target_price.split(',')
     print(target_price)
 
+    # Show Button
+    button_show = Button(root, text='Show', command=lambda: show_stocks())
+    button_show.grid(row=1, column=2)
+
+    def show_stocks():
+        n = 0
+
+        def show_next(n):
+            n += 1
+            label_current_time = Label(root, text=timestamp)
+            label_current_time.grid(row=2, column=0)
+
+            label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
+            label_stock_name.grid(row=2, column=1)
+
+        def go_back(n):
+            n = 0
+            label_current_time = Label(root, text=timestamp)
+            label_current_time.grid(row=2, column=0)
+
+            label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
+            label_stock_name.grid(row=2, column=1)
+
+        label_current_time = Label(root, text=timestamp)
+        label_current_time.grid(row=2, column=0)
+
+        label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
+        label_stock_name.grid(row=2, column=1)
+
+        # Next button which allows users to see the next stock
+        button_next = Button(root, text='Next', command=lambda: show_next(n))
+        button_next.grid(row=2, column=2)
+
+        button_go_back = Button(root, text='Back', command=lambda: go_back(n))
+        button_go_back.grid(row=3, column=2)
+
     # STOCK INFO
-    for count, x in enumerate(stocks_split):
+    for count, x in enumerate(stocks_split, start=0):
         # New URL with the stock added to it
         url = f'https://www.google.com/finance?q={x}'
 
@@ -62,6 +110,7 @@ def search_it(STOCKS, TARGETPRICE):
         try:
             name = (result.find('div', {'class': 'zzDege'})).string
             print(url)
+            scraped_stock_name += [name]
         except AttributeError:
             print('I couldnt find that!')
 
@@ -69,6 +118,7 @@ def search_it(STOCKS, TARGETPRICE):
         price = (result.find('div', {'class': 'YMlKec fxKbKc'})).string
         print(price)
         price_float = float(price[1:])
+        scraped_stock_price += [price_float]
 
         # Timestamp when the data is being logged
         timestamp = str(datetime.now())[11:16]
