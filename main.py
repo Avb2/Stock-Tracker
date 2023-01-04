@@ -7,6 +7,7 @@ from tkinter import *
 
 # Initiates Tkinter
 root = Tk()
+root.geometry('350x124')
 
 # Original URL
 url = 'https://www.google.com/finance?q='
@@ -17,33 +18,33 @@ c = conn.cursor()
 
 # 'Stock' Label for the entry widget
 label_stock = Label(root, text='Stocks ')
-label_stock.grid(row=0, column=0)
+label_stock.grid(row=1, column=0)
 
 # Input the stocks into the Entry widget labeled 'Stocks'
 users_stocks = Entry(root)
-users_stocks.grid(row=0, column=1)
+users_stocks.grid(row=1, column=1, columnspan=3)
 
 # 'Target price' Label for the entry widget
 target_price_label = Label(root, text='Target Price')
-target_price_label.grid(row=1, column=0)
+target_price_label.grid(row=2, column=0)
 
 # Input for the price the user wants the stock to reach
 target_price = Entry(root)
-target_price.grid(row=1, column=1)
+target_price.grid(row=2, column=1, columnspan=3)
 
 # Enter Button, when clicked the inputs will be collected, and separated, then web scraped from 'Google.com/finance' using BeautifulSoup4. The values will then be added to the database.
 button_enter = Button(root, text='Enter', command=lambda: search_it(users_stocks, target_price))
-button_enter.grid(row=0, column=2)
+button_enter.grid(row=1, column=4)
 
-# Show Button
+# Show Button with no command. Clicking it will not do anything.
 button_show = Button(root, text='Show')
-button_show.grid(row=1, column=2)
+button_show.grid(row=2, column=4)
 
 
 def search_it(STOCKS, TARGETPRICE):
     # Next button which allows users to see the next stock
     button_next = Button(root, text='Next')
-    button_next.grid(row=2, column=2)
+    button_next.grid(row=3, column=4)
 
     # Scraped stock names are added to this list
     scraped_stock_name = []
@@ -61,41 +62,79 @@ def search_it(STOCKS, TARGETPRICE):
     target_price = target_price.split(',')
     print(target_price)
 
-    # Show Button
+    # Show Button, when clicked will show you the time, price and name of the first stock in your search
     button_show = Button(root, text='Show', command=lambda: show_stocks())
-    button_show.grid(row=1, column=2)
+    button_show.grid(row=2, column=4)
 
+    # Function is called when 'Show' button is clicked
     def show_stocks():
         n = 0
 
-        def show_next(n):
-            n += 1
-            label_current_time = Label(root, text=timestamp)
-            label_current_time.grid(row=2, column=0)
-
-            label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
-            label_stock_name.grid(row=2, column=1)
-
-        def go_back(n):
-            n = 0
-            label_current_time = Label(root, text=timestamp)
-            label_current_time.grid(row=2, column=0)
-
-            label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
-            label_stock_name.grid(row=2, column=1)
-
+        # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
         label_current_time = Label(root, text=timestamp)
-        label_current_time.grid(row=2, column=0)
+        label_current_time.grid(row=3, column=0)
 
+        # The stock name and price which will be displayed to the user when the show button is clicked.
         label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
-        label_stock_name.grid(row=2, column=1)
+        label_stock_name.grid(row=3, column=1)
+
+        # Shows the next stock in the users search when the 'Next' button is clicked
+        def show_next(n):
+            # Use a try/except statement so the program doesnt end when n > len(scraped_stock_name)
+            try:
+                # Add 1 to n in order to show the next stock
+                n += 1
+
+                # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
+                label_current_time = Label(root, text=timestamp)
+                label_current_time.grid(row=3, column=0)
+
+                # The stock name and price which will be displayed to the user when the show button is clicked. The width of the label will change according to the length of the word
+                label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}',
+                                         width=len(scraped_stock_name[n]))
+                label_stock_name.grid(row=3, column=1)
+
+                # Next button which allows users to see the next stock
+                button_next = Button(root, text='Next', command=lambda: show_next(n))
+                button_next.grid(row=3, column=4)
+
+            # If an index error occurs,  the first stock on the list will be displayed back to the user 
+            except IndexError:
+                # n is set to 0 
+                n = 0
+
+                # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
+                label_current_time = Label(root, text=timestamp)
+                label_current_time.grid(row=3, column=0)
+
+                # The stock name and price which will be displayed to the user when the show button is clicked.
+                label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
+                label_stock_name.grid(row=3, column=1)
+
+                # 'Next' button which allows users to see the next stock
+                button_next = Button(root, text='Next', command=lambda: show_next(n))
+                button_next.grid(row=3, column=4)
+
+        # Takes the user back to the first stock in the list when the 'Back' button is clicked
+        def go_back(n):
+            # n is set back to 0
+            n = 0
+
+            # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
+            label_current_time = Label(root, text=timestamp)
+            label_current_time.grid(row=3, column=0)
+
+            # The stock name and price which will be displayed to the user when the show button is clicked.
+            label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
+            label_stock_name.grid(row=3, column=1)
 
         # Next button which allows users to see the next stock
         button_next = Button(root, text='Next', command=lambda: show_next(n))
-        button_next.grid(row=2, column=2)
+        button_next.grid(row=3, column=4)
 
+        # Takes the user back to the first stock in the list
         button_go_back = Button(root, text='Back', command=lambda: go_back(n))
-        button_go_back.grid(row=3, column=2)
+        button_go_back.grid(row=4, column=4)
 
     # STOCK INFO
     for count, x in enumerate(stocks_split, start=0):
@@ -126,7 +165,7 @@ def search_it(STOCKS, TARGETPRICE):
         # Date of when the data is being logged
         date = str(datetime.now())[:11]
 
-        # Use a try/ except statement to test if a table with the same name already exists.If the table exists, the values will be added to the already existing table.
+        # Use a try/ except statement to test if a table with the same name already exists. If the table exists, the values will be added to the already existing table.
         try:
             # Create table for the stock
             c.execute(f'''CREATE TABLE {x}
@@ -195,4 +234,6 @@ def search_it(STOCKS, TARGETPRICE):
         url = 'https://www.google.com/finance?q='
 
 
+# Calls the mainloop
 root.mainloop()
+
