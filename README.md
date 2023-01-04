@@ -1,6 +1,6 @@
-<h1>Stock Tracker<h1>
+<h1>Stock Tracker</h1>
 
-<h2>Good afternoon, traders!<h2>
+<div><b>Good afternoon, traders!</b><div>
 <p>Stock Tracker is a program that can help you on your day-to-day trading by allowing you to easily track stock prices so that you can buy at the right time!</p>
 
 <body>
