@@ -98,9 +98,9 @@ def search_it(STOCKS, TARGETPRICE):
                 button_next = Button(root, text='Next', command=lambda: show_next(n))
                 button_next.grid(row=3, column=4)
 
-            # If an index error occurs,  the first stock on the list will be displayed back to the user 
+            # If an index error occurs,  the first stock on the list will be displayed back to the user
             except IndexError:
-                # n is set to 0 
+                # n is set to 0
                 n = 0
 
                 # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
@@ -164,6 +164,30 @@ def search_it(STOCKS, TARGETPRICE):
 
         # Date of when the data is being logged
         date = str(datetime.now())[:11]
+
+        try:
+            c.execute('''CREATE TABLE AllStocks
+                (
+                Name,
+                Date,
+                Time,
+                Price
+                )''')
+            conn.commit()
+
+
+        except OperationalError:
+            print('Operational Error: Could not create table.')
+
+        # Adds the values to the database
+        c.execute(f'''INSERT INTO AllStocks VALUES
+                (
+                "{name}",
+                "{date}",
+                "{timestamp}",
+                "${price_float}"
+                )''')
+        conn.commit()
 
         # Use a try/ except statement to test if a table with the same name already exists. If the table exists, the values will be added to the already existing table.
         try:
@@ -230,10 +254,10 @@ def search_it(STOCKS, TARGETPRICE):
         except OperationalError:
             print('Operational Error: Could not insert values into the watchlist.')
 
+
         # URL resets to the original url for the next loop
         url = 'https://www.google.com/finance?q='
 
 
 # Calls the mainloop
 root.mainloop()
-
