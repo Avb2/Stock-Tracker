@@ -8,11 +8,4 @@ Start by running 'main.py'. This program begins by asking the user for the name 
 </body>
 
   
-  
-<ul>
-<h2>NEED TO INSTALL:</h2>
-<li>datetime<li>
-<li>sqlite3</li>
-<li>requests</li>
-<li>bs4</li>
-</ul>
+ 
