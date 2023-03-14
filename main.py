@@ -4,6 +4,11 @@ import requests
 import sqlite3
 from datetime import datetime
 from tkinter import *
+import matplotlib
+from matplotlib import pyplot
+
+import plotPrices
+from plotPrices import showPlot
 
 # Initiates Tkinter
 root = Tk()
@@ -55,12 +60,19 @@ def search_it(STOCKS, TARGETPRICE):
     # User inputs stocks they want to search for, the input is then split
     users_stocks = str(STOCKS.get())
     stocks_split = users_stocks.split(',')
-    print(stocks_split)
+    print('Stocks split', stocks_split)
 
     # User inputs the target price they hope the stock reaches, the input is then split
     target_price = TARGETPRICE.get()
     target_price = target_price.split(',')
-    print(target_price)
+    print('target price', target_price)
+
+    tableNames = []
+    for index, name in enumerate(scraped_stock_name, 0):
+        c.execute(f"SELECT name FROM sqlite_master WHERE Name='{stocks_split[index]}'")
+        tableNames += c.fetchone()
+
+    print('stocks split', stocks_split, 'table names', tableNames)
 
     # Show Button, when clicked will show you the time, price and name of the first stock in your search
     button_show = Button(root, text='Show', command=lambda: show_stocks())
@@ -217,7 +229,7 @@ def search_it(STOCKS, TARGETPRICE):
 
         # 'Finished' will be printed when the values have been added.
         print('finished')
-
+        plotPrices.showPlot(name)
         try:
             # If the price of the stock is less than the specified target price, a watchlist table will be created in the database and values will be added
             if price_float <= float(target_price[count]):
@@ -250,9 +262,12 @@ def search_it(STOCKS, TARGETPRICE):
                 # Tells the user that the stock was added to the watchlist
                 print('Stock added to watchlist')
 
+
+
         # IF an operational error occurs, 'Could not insert values into the watchlist' will be displayed
         except OperationalError:
             print('Operational Error: Could not insert values into the watchlist.')
+
 
 
         # URL resets to the original url for the next loop
