@@ -8,7 +8,6 @@ import matplotlib
 from matplotlib import pyplot
 
 import plotPrices
-from plotPrices import showPlot
 
 # Initiates Tkinter
 root = Tk()
