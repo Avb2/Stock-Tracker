@@ -4,9 +4,6 @@ import requests
 import sqlite3
 from datetime import datetime
 from tkinter import *
-import matplotlib
-from matplotlib import pyplot
-
 import plotPrices
 
 # Initiates Tkinter
@@ -228,7 +225,7 @@ def search_it(STOCKS, TARGETPRICE):
 
         # 'Finished' will be printed when the values have been added.
         print('finished')
-        plotPrices.showPlot(name)
+        plotPrices.showPlot(stocks_split[0])
         try:
             # If the price of the stock is less than the specified target price, a watchlist table will be created in the database and values will be added
             if price_float <= float(target_price[count]):
