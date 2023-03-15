@@ -225,7 +225,9 @@ def search_it(STOCKS, TARGETPRICE):
 
         # 'Finished' will be printed when the values have been added.
         print('finished')
-        plotPrices.showPlot(stocks_split[0])
+        for num, x in enumerate(stocks_split):
+            plotPrices.showPlot(stocks_split[num])
+
         try:
             # If the price of the stock is less than the specified target price, a watchlist table will be created in the database and values will be added
             if price_float <= float(target_price[count]):
