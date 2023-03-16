@@ -2,6 +2,7 @@ import matplotlib
 from matplotlib import pyplot
 import sqlite3
 
+
 def showPlot(stock):
     conn = sqlite3.connect('data-stocks.db')
     c = conn.cursor()
@@ -12,19 +13,31 @@ def showPlot(stock):
     price = [float(prices[0].replace('$', '')) for prices in AllPrices]
     print(price)
 
-    u = []
+    c.execute(f'SELECT Time FROM {stock}')
+    AllTimes = c.fetchall()
+
+    priceIndexes = []
     for x, y in enumerate(AllPrices):
-        u += [x]
+        priceIndexes += [x]
 
-    print(u)
+    matplotlib.pyplot.scatter(priceIndexes, price, s=50, c='blue')
 
-    matplotlib.pyplot.scatter(u, price, s=100, c='red')
-    matplotlib.pyplot.plot(u, price, c='green')
+    for count, x in enumerate(AllPrices, 0):
+        try:
+            if count == len(AllPrices):
+                break
+            elif x >= AllPrices[count - 1]:
+                matplotlib.pyplot.plot([priceIndexes[count], priceIndexes[count + 1]], [price[count], price[count + 1]],
+                                       c='green')
+
+            elif x < AllPrices[count - 1]:
+                matplotlib.pyplot.plot([priceIndexes[count], priceIndexes[count + 1]], [price[count], price[count + 1]],
+                                       c='red')
+        except IndexError:
+            pass
 
     matplotlib.pyplot.xlabel('Index', fontsize=15)
     matplotlib.pyplot.ylabel('Price', fontsize=15)
-    
-    matplotlib.pyplot.title(stock, fontsize=20)
-    
-    matplotlib.pyplot.show()
 
+    matplotlib.pyplot.title(stock, fontsize=20)
+    matplotlib.pyplot.show()
