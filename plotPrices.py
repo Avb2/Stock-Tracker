@@ -22,17 +22,18 @@ def showPlot(stock):
 
     matplotlib.pyplot.scatter(priceIndexes, price, s=50, c='blue')
 
-    for count, x in enumerate(AllPrices, 0):
+    for count, currentPrice in enumerate(AllPrices, 0):
         try:
             if count == len(AllPrices):
                 break
-            elif x >= AllPrices[count - 1]:
-                matplotlib.pyplot.plot([priceIndexes[count], priceIndexes[count + 1]], [price[count], price[count + 1]],
-                                       c='green')
 
-            elif x < AllPrices[count - 1]:
+            elif currentPrice > AllPrices[count + 1]:
                 matplotlib.pyplot.plot([priceIndexes[count], priceIndexes[count + 1]], [price[count], price[count + 1]],
                                        c='red')
+
+            elif currentPrice <= AllPrices[count + 1]:
+                matplotlib.pyplot.plot([priceIndexes[count], priceIndexes[count + 1]], [price[count], price[count + 1]],
+                                       c='green')
         except IndexError:
             pass
 
@@ -41,3 +42,4 @@ def showPlot(stock):
 
     matplotlib.pyplot.title(stock, fontsize=20)
     matplotlib.pyplot.show()
+
