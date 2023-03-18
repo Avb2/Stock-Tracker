@@ -4,11 +4,13 @@ import requests
 import sqlite3
 from datetime import datetime
 from tkinter import *
-import plotPrices
+import time
+from functions.autoRun import autoRun
+from functions.plotPrices import showPlot
 
 # Initiates Tkinter
 root = Tk()
-root.geometry('350x124')
+root.geometry('365x124')
 
 # Original URL
 url = 'https://www.google.com/finance?q='
@@ -17,36 +19,35 @@ url = 'https://www.google.com/finance?q='
 conn = sqlite3.connect('data-stocks.db')
 c = conn.cursor()
 
+# Auto run count
+autoRunCount = 0
+
 # 'Stock' Label for the entry widget
 label_stock = Label(root, text='Stocks ')
-label_stock.grid(row=1, column=0)
+label_stock.grid(row=1, column=0, sticky='nsew')
 
 # Input the stocks into the Entry widget labeled 'Stocks'
 users_stocks = Entry(root)
-users_stocks.grid(row=1, column=1, columnspan=3)
+users_stocks.grid(row=1, column=1, columnspan=3, sticky='nsew')
 
 # 'Target price' Label for the entry widget
 target_price_label = Label(root, text='Target Price')
-target_price_label.grid(row=2, column=0)
+target_price_label.grid(row=2, column=0, sticky='nsew')
 
 # Input for the price the user wants the stock to reach
 target_price = Entry(root)
-target_price.grid(row=2, column=1, columnspan=3)
+target_price.grid(row=2, column=1, columnspan=3, sticky='nsew')
 
 # Enter Button, when clicked the inputs will be collected, and separated, then web scraped from 'Google.com/finance' using BeautifulSoup4. The values will then be added to the database.
 button_enter = Button(root, text='Enter', command=lambda: search_it(users_stocks, target_price))
-button_enter.grid(row=1, column=4)
+button_enter.grid(row=1, column=4, sticky='nsew')
 
-# Show Button with no command. Clicking it will not do anything.
-button_show = Button(root, text='Show')
-button_show.grid(row=2, column=4)
+# Auto run button
+button_autoRun = Button(root, text='Auto Run', command=lambda: autoRun(users_stocks, target_price, autoRunCount))
+button_autoRun.grid(row=2, column=4, sticky='nsew')
 
 
 def search_it(STOCKS, TARGETPRICE):
-    # Next button which allows users to see the next stock
-    button_next = Button(root, text='Next')
-    button_next.grid(row=3, column=4)
-
     # Scraped stock names are added to this list
     scraped_stock_name = []
 
@@ -72,77 +73,26 @@ def search_it(STOCKS, TARGETPRICE):
 
     # Show Button, when clicked will show you the time, price and name of the first stock in your search
     button_show = Button(root, text='Show', command=lambda: show_stocks())
-    button_show.grid(row=2, column=4)
+    button_show.grid(row=3, column=4, sticky='nsew')
+
+    # Resize the tkinter widget
+    root.update_idletasks()
+    root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
 
     # Function is called when 'Show' button is clicked
     def show_stocks():
-        n = 0
-
-        # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
-        label_current_time = Label(root, text=timestamp)
-        label_current_time.grid(row=3, column=0)
-
-        # The stock name and price which will be displayed to the user when the show button is clicked.
-        label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
-        label_stock_name.grid(row=3, column=1)
-
-        # Shows the next stock in the users search when the 'Next' button is clicked
-        def show_next(n):
-            # Use a try/except statement so the program doesnt end when n > len(scraped_stock_name)
-            try:
-                # Add 1 to n in order to show the next stock
-                n += 1
-
-                # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
-                label_current_time = Label(root, text=timestamp)
-                label_current_time.grid(row=3, column=0)
-
-                # The stock name and price which will be displayed to the user when the show button is clicked. The width of the label will change according to the length of the word
-                label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}',
-                                         width=len(scraped_stock_name[n]))
-                label_stock_name.grid(row=3, column=1)
-
-                # Next button which allows users to see the next stock
-                button_next = Button(root, text='Next', command=lambda: show_next(n))
-                button_next.grid(row=3, column=4)
-
-            # If an index error occurs,  the first stock on the list will be displayed back to the user
-            except IndexError:
-                # n is set to 0
-                n = 0
-
-                # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
-                label_current_time = Label(root, text=timestamp)
-                label_current_time.grid(row=3, column=0)
-
-                # The stock name and price which will be displayed to the user when the show button is clicked.
-                label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
-                label_stock_name.grid(row=3, column=1)
-
-                # 'Next' button which allows users to see the next stock
-                button_next = Button(root, text='Next', command=lambda: show_next(n))
-                button_next.grid(row=3, column=4)
-
-        # Takes the user back to the first stock in the list when the 'Back' button is clicked
-        def go_back(n):
-            # n is set back to 0
-            n = 0
+        for numberOfStocks, stock in enumerate(scraped_stock_name):
+            # Create the stock name label
+            label_stock_name = Label(root,
+                                     text=f'{scraped_stock_name[numberOfStocks]} is at ${scraped_stock_price[numberOfStocks]}')
+            label_stock_name.grid(row=3 + numberOfStocks, column=1, sticky='nsew')
 
             # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
             label_current_time = Label(root, text=timestamp)
-            label_current_time.grid(row=3, column=0)
+            label_current_time.grid(row=3 + numberOfStocks, column=0, sticky='nsew')
 
-            # The stock name and price which will be displayed to the user when the show button is clicked.
-            label_stock_name = Label(root, text=f'{scraped_stock_name[n]} is at ${scraped_stock_price[n]}')
-            label_stock_name.grid(row=3, column=1)
-
-        # Next button which allows users to see the next stock
-        button_next = Button(root, text='Next', command=lambda: show_next(n))
-        button_next.grid(row=3, column=4)
-
-        # Takes the user back to the first stock in the list
-        button_go_back = Button(root, text='Back', command=lambda: go_back(n))
-        button_go_back.grid(row=4, column=4)
+        root.update_idletasks()
+        root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
 
     # STOCK INFO
     for count, x in enumerate(stocks_split, start=0):
@@ -153,13 +103,14 @@ def search_it(STOCKS, TARGETPRICE):
         req = requests.get(url)
         result = BeautifulSoup(req.text, 'html.parser')
 
-        # Find the name of the stock. Use a try/ except statement to see if the stock is listed on Google finance. If not, 'I couldnt find that will be printed to the user' will be printed. If an Attribute Error occurs,'I couldnt find that!' will be printed.
+        # Find the name of the stock. Use a try/ except statement to see if the stock is listed on Google finance. If not, 'I couldnt find that will be printed to the user' will be printed. If an Attribute Error occurs,'I couldnt find that! ' will be printed.
         try:
             name = (result.find('div', {'class': 'zzDege'})).string
             print(url)
             scraped_stock_name += [name]
         except AttributeError:
             print('I couldnt find that!')
+            continue
 
         # Finds the price of the stock and converts it into a float
         price = (result.find('div', {'class': 'YMlKec fxKbKc'})).string
@@ -226,7 +177,7 @@ def search_it(STOCKS, TARGETPRICE):
         # 'Finished' will be printed when the values have been added.
         print('finished')
         for num, x in enumerate(stocks_split):
-            plotPrices.showPlot(stocks_split[num])
+            showPlot(stocks_split[num])
 
         try:
             # If the price of the stock is less than the specified target price, a watchlist table will be created in the database and values will be added
@@ -266,11 +217,13 @@ def search_it(STOCKS, TARGETPRICE):
         except OperationalError:
             print('Operational Error: Could not insert values into the watchlist.')
 
-
-
         # URL resets to the original url for the next loop
         url = 'https://www.google.com/finance?q='
 
 
+root.update_idletasks()
+root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
+
 # Calls the mainloop
 root.mainloop()
+
