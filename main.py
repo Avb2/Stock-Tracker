@@ -4,12 +4,25 @@ import requests
 import sqlite3
 from datetime import datetime
 from tkinter import *
+from tkinter.ttk import Combobox
 import time
 from functions.autoRun import autoRun
 from functions.autoRun import stop_autorun
 from functions.plotPrices import showPlot
 from functions.upOrDown import fromHigh
 from functions.clearEntries import clearEntries
+
+
+conn = sqlite3.connect('/Users/ab/PycharmProjects/stock-tracker/data-stocks.db')
+c = conn.cursor()
+
+c.execute(f'SELECT tbl_name FROM sqlite_master')
+allStocksTuple = c.fetchall()
+
+allStocks = []
+
+for COUNT, x in enumerate(allStocksTuple):
+    allStocks += x
 
 
 def search_it(STOCKS, TARGETPRICE):
@@ -228,8 +241,10 @@ label_stock = Label(root, text='Stocks ')
 label_stock.configure(font=('Arial', 16))
 label_stock.grid(row=1, column=0, sticky='nsew')
 
+
+
 # Input the stocks into the Entry widget labeled 'Stocks'
-users_stocks = Entry(root)
+users_stocks = Combobox(root, values=allStocks)
 users_stocks.grid(row=1, column=1, columnspan=3, sticky='nsew')
 
 # 'Target price' Label for the entry widget
@@ -253,16 +268,22 @@ button_autoRun.grid(row=2, column=4, sticky='nsew')
 
 button_autoRun_stop = Button(root, text='Stop', command=lambda: stop_autorun())
 button_autoRun_stop.configure(activeforeground='red')
-button_autoRun_stop.grid(row=2, column=5)
+button_autoRun_stop.grid(row=2, column=5, sticky='nsew')
 
 # Clear button
 
 button_clear = Button(root, text='Clear', command=lambda: clearEntries(users_stocks, target_price, root))
 button_clear.configure(activeforeground='red')
-button_clear.grid(row=1, column=5)
+button_clear.grid(row=1, column=5, sticky='nsew')
+
+# List all stocks from db
+button_list_stocks = Button(root, text='Mkt. Health', command=lambda: print('In Progress'))
+button_list_stocks.configure(activeforeground='red')
+button_list_stocks.grid(row=3, column=5, sticky='nsew')
 
 root.update_idletasks()
 root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
 
 # Calls the mainloop
 root.mainloop()
+
