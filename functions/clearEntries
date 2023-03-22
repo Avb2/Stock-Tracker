@@ -1,0 +1,18 @@
+from tkinter import *
+
+
+def clearEntries(stockEntry, targetPriceEntry, root):
+    
+    stockEntry.grid_forget()
+    targetPriceEntry.grid_forget()
+
+    # Input the stocks into the Entry widget labeled 'Stocks'
+    users_stocks = Entry(root)
+    users_stocks.grid(row=1, column=1, columnspan=3, sticky='nsew')
+
+    # Input for the price the user wants the stock to reach
+    target_price = Entry(root)
+    target_price.grid(row=2, column=1, columnspan=3, sticky='nsew')
+
+    print('cleared')
+
