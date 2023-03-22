@@ -25,13 +25,13 @@ def fromHigh(stock, root):
             if COUNT == indexes:
                 # If the highest price on the list is greater than 0 a label will be created displaying the difference from the highest scraped price
                 if max(price) - currentPrice > 0:
-                    label_from_high = Label(root, text=f'Current price is down ${round((max(price) - currentPrice), 2)} from the high')
+                    label_from_high = Label(root, text=f'Current price is down ${round((max(price) - currentPrice), 2)} from the high of ${round(max(price))}')
                     label_from_high.configure(font=('Arial', 16))
                     label_from_high.grid(row=4 + STOCKCOUNT, column=6)
 
                 # If the highest price on the list is = 0, a label will be created stating the current price is the new high from the scraped stocks
                 elif max(price) - currentPrice == 0:
-                    label_from_high = Label(root, text='The current price is the new high')
+                    label_from_high = Label(root, text=f'The current price is the new high at ${currentPrice}')
                     label_from_high.configure(font=('Arial', 16))
                     label_from_high.grid(row=4 + STOCKCOUNT, column=6)
 
