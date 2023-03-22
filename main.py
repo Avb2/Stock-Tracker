@@ -1,3 +1,4 @@
+from sqlite3 import OperationalError
 from bs4 import BeautifulSoup
 import requests
 import sqlite3
@@ -59,10 +60,12 @@ def search_it(STOCKS, TARGETPRICE):
         for numberOfStocks, stock in enumerate(scraped_stock_name):
             # Create the stock name label
             label_stock_name = Label(root, text=f'{scraped_stock_name[numberOfStocks]} is at ${scraped_stock_price[numberOfStocks]}')
+            label_stock_name.configure(font=('Arial', 16))
             label_stock_name.grid(row=4 + numberOfStocks, column=1, sticky='nsew')
 
             # Timestamp of when the stock was scraped which will be displayed to the user when the show button is clicked.
             label_current_time = Label(root, text=timestamp)
+            label_current_time.configure(font=('Arial', 16))
             label_current_time.grid(row=4 + numberOfStocks, column=0, sticky='nsew')
 
         fromHigh(stocks_split, root)
@@ -220,6 +223,7 @@ autoRunCount = 0
 
 # 'Stock' Label for the entry widget
 label_stock = Label(root, text='Stocks ')
+label_stock.configure(font=('Arial', 16))
 label_stock.grid(row=1, column=0, sticky='nsew')
 
 # Input the stocks into the Entry widget labeled 'Stocks'
@@ -228,6 +232,7 @@ users_stocks.grid(row=1, column=1, columnspan=3, sticky='nsew')
 
 # 'Target price' Label for the entry widget
 target_price_label = Label(root, text='Target Price')
+target_price_label.configure(font=('Arial', 16))
 target_price_label.grid(row=2, column=0, sticky='nsew')
 
 # Input for the price the user wants the stock to reach
