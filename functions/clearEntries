@@ -1,13 +1,25 @@
+import sqlite3
 from tkinter import *
+from tkinter.ttk import Combobox
 
 
 def clearEntries(stockEntry, targetPriceEntry, root):
-    
+    conn = sqlite3.connect('/Users/ab/PycharmProjects/stock-tracker/data-stocks.db')
+    c = conn.cursor()
+
+    c.execute(f'SELECT tbl_name FROM sqlite_master')
+    allStocksTuple = c.fetchall()
+
+    allStocks = []
+
+    for COUNT, x in enumerate(allStocksTuple):
+        allStocks += x
+
     stockEntry.grid_forget()
     targetPriceEntry.grid_forget()
 
     # Input the stocks into the Entry widget labeled 'Stocks'
-    users_stocks = Entry(root)
+    users_stocks = Combobox(root, values=allStocks)
     users_stocks.grid(row=1, column=1, columnspan=3, sticky='nsew')
 
     # Input for the price the user wants the stock to reach
