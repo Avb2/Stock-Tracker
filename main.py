@@ -9,6 +9,7 @@ from functions.autoRun import autoRun
 from functions.autoRun import stop_autorun
 from functions.plotPrices import showPlot
 from functions.upOrDown import fromHigh
+from functions.clearEntries import clearEntries
 
 
 def search_it(STOCKS, TARGETPRICE):
@@ -37,6 +38,7 @@ def search_it(STOCKS, TARGETPRICE):
 
     # Show Button, when clicked will show you the time, price and name of the first stock in your search
     button_show = Button(root, text='Show', command=lambda: show_stocks())
+    button_show.configure(activeforeground='red')
     button_show.grid(row=3, column=4, sticky='nsew')
 
     # Resize the tkinter widget
@@ -241,18 +243,26 @@ target_price.grid(row=2, column=1, columnspan=3, sticky='nsew')
 
 # Enter Button, when clicked the inputs will be collected, and separated, then web scraped from 'Google.com/finance' using BeautifulSoup4. The values will then be added to the database.
 button_enter = Button(root, text='Enter', command=lambda: search_it(users_stocks, target_price))
+button_enter.configure(activeforeground='red')
 button_enter.grid(row=1, column=4, sticky='nsew')
 
 # Auto run button
 button_autoRun = Button(root, text='Auto Run', command=lambda: autoRun(users_stocks, target_price, autoRunCount,root))
+button_autoRun.configure(activeforeground='red')
 button_autoRun.grid(row=2, column=4, sticky='nsew')
 
 button_autoRun_stop = Button(root, text='Stop', command=lambda: stop_autorun())
+button_autoRun_stop.configure(activeforeground='red')
 button_autoRun_stop.grid(row=2, column=5)
+
+# Clear button
+
+button_clear = Button(root, text='Clear', command=lambda: clearEntries(users_stocks, target_price, root))
+button_clear.configure(activeforeground='red')
+button_clear.grid(row=1, column=5)
 
 root.update_idletasks()
 root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
 
 # Calls the mainloop
 root.mainloop()
-
