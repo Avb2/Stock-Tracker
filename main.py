@@ -11,7 +11,7 @@ from functions.autoRun import stop_autorun
 from functions.plotPrices import showPlot
 from functions.upOrDown import fromHigh
 from functions.clearEntries import clearEntries
-
+from functions.previousClose import previousClose
 
 conn = sqlite3.connect('/Users/ab/PycharmProjects/stock-tracker/data-stocks.db')
 c = conn.cursor()
@@ -277,9 +277,12 @@ button_clear.configure(activeforeground='red')
 button_clear.grid(row=1, column=5, sticky='nsew')
 
 # List all stocks from db
-button_list_stocks = Button(root, text='Mkt. Health', command=lambda: print('In Progress'))
+button_list_stocks = Button(root, text='Previous Close', command=lambda: previousClose(users_stocks, root))
 button_list_stocks.configure(activeforeground='red')
 button_list_stocks.grid(row=3, column=5, sticky='nsew')
+
+root.columnconfigure(6, pad=30)
+root.columnconfigure(7, pad=30)
 
 root.update_idletasks()
 root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
