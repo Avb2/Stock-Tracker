@@ -12,6 +12,7 @@ from functions.plotPrices import showPlot
 from functions.upOrDown import fromHigh
 from functions.clearEntries import clearEntries
 from functions.previousClose import previousClose
+from functions.runAll import runAll
 
 conn = sqlite3.connect('/Users/ab/PycharmProjects/stock-tracker/data-stocks.db')
 c = conn.cursor()
@@ -23,6 +24,9 @@ allStocks = []
 
 for COUNT, x in enumerate(allStocksTuple):
     allStocks += x
+
+allStocks.remove('Watchlist')
+allStocks.remove('AllStocks')
 
 
 def search_it(STOCKS, TARGETPRICE):
@@ -52,7 +56,9 @@ def search_it(STOCKS, TARGETPRICE):
     # Show Button, when clicked will show you the time, price and name of the first stock in your search
     button_show = Button(root, text='Show', command=lambda: show_stocks())
     button_show.configure(activeforeground='red')
-    button_show.grid(row=3, column=4, sticky='nsew')
+    button_show.grid(row=3, column=5, sticky='nsew')
+
+
 
     # Resize the tkinter widget
     root.update_idletasks()
@@ -84,6 +90,8 @@ def search_it(STOCKS, TARGETPRICE):
             label_current_time.grid(row=4 + numberOfStocks, column=0, sticky='nsew')
 
         fromHigh(stocks_split, root)
+
+        previousClose(users_stocks, root)
 
         root.update_idletasks()
         root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
@@ -128,7 +136,6 @@ def search_it(STOCKS, TARGETPRICE):
                 )''')
             conn.commit()
 
-
         except OperationalError:
             print('Operational Error: Could not create table.')
 
@@ -171,8 +178,7 @@ def search_it(STOCKS, TARGETPRICE):
         # 'Finished' will be printed when the values have been added.
         print('finished')
         for num, x in enumerate(stocks_split):
-            showPlot(stocks_split[num])
-
+            showPlot(stocks_split[num], root)
 
         try:
             # If the price of the stock is less than the specified target price, a watchlist table will be created in the database and values will be added
@@ -187,7 +193,6 @@ def search_it(STOCKS, TARGETPRICE):
                         Time,
                         Price
                         )''')
-
 
                 except OperationalError:
                     print('Operational Error: Could not create table.')
@@ -206,20 +211,12 @@ def search_it(STOCKS, TARGETPRICE):
                 # Tells the user that the stock was added to the watchlist
                 print('Stock added to watchlist')
 
-
-
-
-
         # IF an operational error occurs, 'Could not insert values into the watchlist' will be displayed
         except OperationalError:
             print('Operational Error: Could not insert values into the watchlist.')
 
-
-
         # URL resets to the original url for the next loop
         url = 'https://www.google.com/finance?q='
-
-
 
 
 # Initiates Tkinter
@@ -240,8 +237,6 @@ autoRunCount = 0
 label_stock = Label(root, text='Stocks ')
 label_stock.configure(font=('Arial', 16))
 label_stock.grid(row=1, column=0, sticky='nsew')
-
-
 
 # Input the stocks into the Entry widget labeled 'Stocks'
 users_stocks = Combobox(root, values=allStocks)
@@ -276,13 +271,14 @@ button_clear = Button(root, text='Clear', command=lambda: clearEntries(users_sto
 button_clear.configure(activeforeground='red')
 button_clear.grid(row=1, column=5, sticky='nsew')
 
-# List all stocks from db
-button_list_stocks = Button(root, text='Previous Close', command=lambda: previousClose(users_stocks, root))
-button_list_stocks.configure(activeforeground='red')
-button_list_stocks.grid(row=3, column=5, sticky='nsew')
-
 root.columnconfigure(6, pad=30)
 root.columnconfigure(7, pad=30)
+
+# Run all button
+
+button_run_all = Button(root, text='Run All', activeforeground='red', command=lambda: runAll(root, conn, c, allStocks))
+button_run_all.grid(row=3, column=4, sticky='nsew')
+
 
 root.update_idletasks()
 root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
