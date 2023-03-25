@@ -215,6 +215,9 @@ def search_it(STOCKS, TARGETPRICE):
         except OperationalError:
             print('Operational Error: Could not insert values into the watchlist.')
 
+        except ValueError:
+            print("You didn't include a target price.")
+
         # URL resets to the original url for the next loop
         url = 'https://www.google.com/finance?q='
 
