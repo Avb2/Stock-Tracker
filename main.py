@@ -1,3 +1,4 @@
+import threading
 from sqlite3 import OperationalError
 from bs4 import BeautifulSoup
 import requests
@@ -7,12 +8,12 @@ from tkinter import *
 from tkinter.ttk import Combobox
 import time
 from functions.autoRun import autoRun
-from functions.autoRun import stop_autorun
 from functions.plotPrices import showPlot
 from functions.upOrDown import fromHigh
 from functions.clearEntries import clearEntries
 from functions.previousClose import previousClose
 from functions.runAll import runAll
+from functions.autoRun import stop_autorun
 
 conn = sqlite3.connect('/Users/ab/PycharmProjects/stock-tracker/data-stocks.db')
 c = conn.cursor()
@@ -27,6 +28,8 @@ for COUNT, x in enumerate(allStocksTuple):
 
 allStocks.remove('Watchlist')
 allStocks.remove('AllStocks')
+
+autorunning = False
 
 
 def search_it(STOCKS, TARGETPRICE):
@@ -58,8 +61,6 @@ def search_it(STOCKS, TARGETPRICE):
     button_show.configure(activeforeground='red')
     button_show.grid(row=3, column=5, sticky='nsew')
 
-
-
     # Resize the tkinter widget
     root.update_idletasks()
     root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
@@ -77,10 +78,10 @@ def search_it(STOCKS, TARGETPRICE):
         label_all_scraped_stocks.configure(foreground='red', font=('Arial', 20))
         label_all_scraped_stocks.grid(row=3, column=1, sticky='nsew')
 
-
         for numberOfStocks, stock in enumerate(scraped_stock_name):
             # Create the stock name label
-            label_stock_name = Label(root, text=f'{scraped_stock_name[numberOfStocks]} is at ${scraped_stock_price[numberOfStocks]}')
+            label_stock_name = Label(root,
+                                     text=f'{scraped_stock_name[numberOfStocks]} is at ${scraped_stock_price[numberOfStocks]}')
             label_stock_name.configure(font=('Arial', 16))
             label_stock_name.grid(row=4 + numberOfStocks, column=1, sticky='nsew')
 
@@ -99,7 +100,7 @@ def search_it(STOCKS, TARGETPRICE):
     # STOCK INFO
     for count, x in enumerate(stocks_split, start=0):
         # New URL with the stock added to it
-        url = f'https://www.google.com/finance?q={x}'.replace(' ','')
+        url = f'https://www.google.com/finance?q={x}'.replace(' ', '')
 
         # Requests and scrape the URL
         req = requests.get(url)
@@ -260,7 +261,9 @@ button_enter.configure(activeforeground='red')
 button_enter.grid(row=1, column=4, sticky='nsew')
 
 # Auto run button
-button_autoRun = Button(root, text='Auto Run', command=lambda: autoRun(users_stocks, target_price, autoRunCount,root))
+autoRunIt = threading.Thread(target=autoRun, args=(users_stocks, target_price))
+
+button_autoRun = Button(root, text='Auto Run', command=lambda: autoRunIt.start())
 button_autoRun.configure(activeforeground='red')
 button_autoRun.grid(row=2, column=4, sticky='nsew')
 
@@ -278,10 +281,8 @@ root.columnconfigure(6, pad=30)
 root.columnconfigure(7, pad=30)
 
 # Run all button
-
 button_run_all = Button(root, text='Run All', activeforeground='red', command=lambda: runAll(root, conn, c, allStocks))
 button_run_all.grid(row=3, column=4, sticky='nsew')
-
 
 root.update_idletasks()
 root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
