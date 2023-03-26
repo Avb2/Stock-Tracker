@@ -27,6 +27,12 @@
     <li>Click the 'Stop' button to end the Auto Run thread</li>
     <br><p>NOTE: You can still scrape other stocks while auto run is active</p>
    </ul>
+  
+  <h2>Using Run All feature </h2>
+  <ul>
+    <li>Click 'Run All'</li>
+    <p>All stocks you have previously searched that are saved in your data-stocks.db file will be web scraped and the prices will be added to the db</p>
+    <br><p>NOTE: Once you start the Run All feature, you cannot end it until it is complete</p>
    
   <h2>Under the hood</h2>
   <ul>
