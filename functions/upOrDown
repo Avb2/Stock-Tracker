@@ -3,9 +3,13 @@ from tkinter import *
 
 
 def fromHigh(stock, root):
+
     # Connect to database
     conn = sqlite3.connect('/Users/ab/PycharmProjects/stock-tracker/data-stocks.db')
     c = conn.cursor()
+
+    label_from_high_title = Label(root, text='High', foreground='red', font=('Arial', 20))
+    label_from_high_title.grid(row=3, column=6, sticky='nsew')
 
     for STOCKCOUNT, stockName in enumerate(stock):
         # Add all prices from database to list
@@ -14,6 +18,7 @@ def fromHigh(stock, root):
 
         # Turn the price into a list of floats
         price = [float(prices[0].replace('$', '')) for prices in AllPrices]
+
 
         # For each price in the list of prices
         for COUNT, currentPrice in enumerate(price):
@@ -27,11 +32,14 @@ def fromHigh(stock, root):
                 if max(price) - currentPrice > 0:
                     label_from_high = Label(root, text=f'Current price is down ${round((max(price) - currentPrice), 2)} from the high of ${round(max(price))}')
                     label_from_high.configure(font=('Arial', 16))
-                    label_from_high.grid(row=4 + STOCKCOUNT, column=6)
+                    label_from_high.grid(row=4 + STOCKCOUNT, column=6, sticky='nsew')
+
 
                 # If the highest price on the list is = 0, a label will be created stating the current price is the new high from the scraped stocks
                 elif max(price) - currentPrice == 0:
                     label_from_high = Label(root, text=f'The current price is the new high at ${currentPrice}')
                     label_from_high.configure(font=('Arial', 16))
-                    label_from_high.grid(row=4 + STOCKCOUNT, column=6)
+                    label_from_high.grid(row=4 + STOCKCOUNT, column=6, sticky='nsew')
+
+
 
