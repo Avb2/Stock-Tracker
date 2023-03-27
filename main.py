@@ -15,20 +15,25 @@ from functions.previousClose import previousClose
 from functions.runAll import runAll
 from functions.autoRun import stop_autorun
 
+# Connect to the sqlite database
 conn = sqlite3.connect('/Users/ab/PycharmProjects/stock-tracker/data-stocks.db')
 c = conn.cursor()
 
+# Collects all table names from the sqlite database and creates a tuple
 c.execute(f'SELECT tbl_name FROM sqlite_master')
 allStocksTuple = c.fetchall()
 
 allStocks = []
 
+# Iterates through the tuple containing all the stock names and adds them to a new list
 for COUNT, x in enumerate(allStocksTuple):
     allStocks += x
 
+# Remove watchlist and allstocks tables from the list of stock names so they don't appear in the drop down menu
 allStocks.remove('Watchlist')
 allStocks.remove('AllStocks')
 
+# Autorunning value set to false so the autorun function doesn't initiate
 autorunning = False
 
 
@@ -36,7 +41,7 @@ def search_it(STOCKS, TARGETPRICE):
     # Scraped stock names are added to this list
     scraped_stock_name = []
 
-    # Scraped prices are added to this list
+    # Scraped stock prices are added to this list
     scraped_stock_price = []
 
     # User inputs stocks they want to search for, the input is then split
@@ -50,6 +55,8 @@ def search_it(STOCKS, TARGETPRICE):
     print('target price', target_price)
 
     tableNames = []
+    
+    # Iterates through the list of stock names gathered from the stock input box in the tkinter widget, and finds the table in the sqlite database with the corresponding name
     for index, name in enumerate(scraped_stock_name, 0):
         c.execute(f"SELECT name FROM sqlite_master WHERE Name='{stocks_split[index]}'")
         tableNames += c.fetchone()
@@ -61,7 +68,7 @@ def search_it(STOCKS, TARGETPRICE):
     button_show.configure(activeforeground='red')
     button_show.grid(row=3, column=5, sticky='nsew')
 
-    # Resize the tkinter widget
+    # Resizes the tkinter widget
     root.update_idletasks()
     root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
 
@@ -77,11 +84,11 @@ def search_it(STOCKS, TARGETPRICE):
         label_all_scraped_stocks = Label(root, text='Stocks')
         label_all_scraped_stocks.configure(foreground='red', font=('Arial', 20))
         label_all_scraped_stocks.grid(row=3, column=1, sticky='nsew')
-
+        
+        # Iterates through the list of stock names and creates tkinter labels for them to be added to tkinter widget
         for numberOfStocks, stock in enumerate(scraped_stock_name):
             # Create the stock name label
-            label_stock_name = Label(root,
-                                     text=f'{scraped_stock_name[numberOfStocks]} is at ${scraped_stock_price[numberOfStocks]}')
+            label_stock_name = Label(root, text=f'{scraped_stock_name[numberOfStocks]} is at ${scraped_stock_price[numberOfStocks]}')
             label_stock_name.configure(font=('Arial', 16))
             label_stock_name.grid(row=4 + numberOfStocks, column=1, sticky='nsew')
 
@@ -90,14 +97,17 @@ def search_it(STOCKS, TARGETPRICE):
             label_current_time.configure(font=('Arial', 16))
             label_current_time.grid(row=4 + numberOfStocks, column=0, sticky='nsew')
 
+        # Shows the highest price value for stocks in the tkinter widget
         fromHigh(stocks_split, root)
-
+        
+        # Shows the previous closing price in the tkinter widget
         previousClose(users_stocks, root)
-
+        
+        # Resizes the tkinter widget
         root.update_idletasks()
         root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
 
-    # STOCK INFO
+    # Iterates through the list of stock names to begin webscraping the stock information
     for count, x in enumerate(stocks_split, start=0):
         # New URL with the stock added to it
         url = f'https://www.google.com/finance?q={x}'.replace(' ', '')
@@ -106,7 +116,7 @@ def search_it(STOCKS, TARGETPRICE):
         req = requests.get(url)
         result = BeautifulSoup(req.text, 'html.parser')
 
-        # Find the name of the stock. Use a try/ except statement to see if the stock is listed on Google finance. If not, 'I couldnt find that will be printed to the user' will be printed. If an Attribute Error occurs,'I couldnt find that! ' will be printed.
+        # Find the name of the stock. Use a try/ except statement to see if the stock is listed on Google finance. If not, 'I couldnt find that will be printed to the user' will be printed in the terminal. If an Attribute Error occurs,'I couldnt find that! ' will be printed.
         try:
             name = (result.find('div', {'class': 'zzDege'})).string
             print(url)
@@ -127,6 +137,7 @@ def search_it(STOCKS, TARGETPRICE):
         # Date of when the data is being logged
         date = str(datetime.now())[:11]
 
+        # Attempts to create the AllStocks table, which stores all web-scraped stock information in it 
         try:
             c.execute('''CREATE TABLE AllStocks
                 (
@@ -136,11 +147,12 @@ def search_it(STOCKS, TARGETPRICE):
                 Price
                 )''')
             conn.commit()
-
+        
+        # If the table already exists, the below message will be printed in the terminal
         except OperationalError:
             print('Operational Error: Could not create table.')
 
-        # Adds the values to the database
+        # Adds the values to the All Stocks database
         c.execute(f'''INSERT INTO AllStocks VALUES
                 (
                 "{name}",
@@ -162,11 +174,12 @@ def search_it(STOCKS, TARGETPRICE):
                     )''')
 
             conn.commit()
-
+        
+        # If the table already exists, an error message will be displayed in the terminal
         except OperationalError:
             print('Operational Error: Could not create table.')
 
-        # Adds the values to the database
+        # Adds the values to its corresponding database
         c.execute(f'''INSERT INTO {x} VALUES
                 (
                 "{name}",
@@ -212,10 +225,10 @@ def search_it(STOCKS, TARGETPRICE):
                 # Tells the user that the stock was added to the watchlist
                 print('Stock added to watchlist')
 
-        # IF an operational error occurs, 'Could not insert values into the watchlist' will be displayed
+        # If an operational error occurs, 'Could not insert values into the watchlist' will be displayed
         except OperationalError:
             print('Operational Error: Could not insert values into the watchlist.')
-
+        # If the user didnt include a target price, a message will be displayed in the terminal
         except ValueError:
             print("You didn't include a target price.")
 
@@ -267,16 +280,17 @@ button_autoRun = Button(root, text='Auto Run', command=lambda: autoRunIt.start()
 button_autoRun.configure(activeforeground='red')
 button_autoRun.grid(row=2, column=4, sticky='nsew')
 
+# Auto run stop button
 button_autoRun_stop = Button(root, text='Stop', command=lambda: stop_autorun())
 button_autoRun_stop.configure(activeforeground='red')
 button_autoRun_stop.grid(row=2, column=5, sticky='nsew')
 
 # Clear button
-
 button_clear = Button(root, text='Clear', command=lambda: clearEntries(users_stocks, target_price, root))
 button_clear.configure(activeforeground='red')
 button_clear.grid(row=1, column=5, sticky='nsew')
 
+# Adds padding between columns
 root.columnconfigure(6, pad=30)
 root.columnconfigure(7, pad=30)
 
@@ -284,6 +298,7 @@ root.columnconfigure(7, pad=30)
 button_run_all = Button(root, text='Run All', activeforeground='red', command=lambda: runAll(root, conn, c, allStocks))
 button_run_all.grid(row=3, column=4, sticky='nsew')
 
+# Resizes the tkinter widget
 root.update_idletasks()
 root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
 
