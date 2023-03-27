@@ -7,6 +7,7 @@ from datetime import datetime
 
 def stop_autorun():
     global autorunning
+    # Changes the value of autorunning to false to end the autorun loop
     autorunning = False
     print('Auto run stopped')
 
@@ -18,7 +19,7 @@ def autoRun(STOCKS, TARGETPRICE):
         smtp_conn = smtplib.SMTP(smtp_server, smtp_port)
 
         smtp_conn.starttls()
-        smtp_conn.login('youremail@outlook.com', 'yourpassword12')
+        smtp_conn.login('hotsauceinmypants@outlook.com', 'usingpython12')
 
         from_addr = 'hotsauceinmypants@outlook.com'
         to_addr = 'bringuel.alexander@gmail.com'
@@ -32,6 +33,7 @@ def autoRun(STOCKS, TARGETPRICE):
 
 
     global autorunning
+    # Changes the autorunning value to true to initiate the auto run
     autorunning = True
     print('Auto Run initiated')
 
@@ -43,7 +45,9 @@ def autoRun(STOCKS, TARGETPRICE):
     target_price = TARGETPRICE.get()
     target_price = target_price.split(',')
 
+    # List used to limit the amount of emails sent
     emailcount = []
+
 
     while autorunning:
         # Scraped stock names are added to this list
@@ -52,7 +56,7 @@ def autoRun(STOCKS, TARGETPRICE):
         # Scraped prices are added to this list
         scraped_stock_price = []
 
-        # STOCK INFO
+        # Iterates through list of stock names and begins webscraping
         for count, x in enumerate(stocks_split, start=0):
             # New URL with the stock added to it
             url = f'https://www.google.com/finance?q={x}'
@@ -66,6 +70,7 @@ def autoRun(STOCKS, TARGETPRICE):
                 name = (result.find('div', {'class': 'zzDege'})).string
                 print(url)
                 scraped_stock_name += [name]
+            # If the stock name couldnt be found a message will be printed in the terminal
             except AttributeError:
                 print('I couldnt find that!')
 
@@ -80,14 +85,16 @@ def autoRun(STOCKS, TARGETPRICE):
             # Date of when the data is being logged
             date = str(datetime.now())[:11]
 
+            # Displays stock information in the terminal
             print(f'Date: {date}, Time: {timestamp}, Name: {name}, Price: {price}')
 
+            # If the price is less than or equal to the target price AND the emailcount is less than 1, an email will be sent to the user
             if price_float <= int(target_price[0]) and len(emailcount) < 1:
                 sendEmail(name, emailcount)
 
             # URL resets to the original url for the next loop
             url = 'https://www.google.com/finance?q='
 
-            # Sleeps for 10 seconds
+            # Sleeps for 10 minutes
             print(autorunning)
             time.sleep(600)
