@@ -40,7 +40,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
     # Adds the values to the All Stocks database
     c.execute(f'''INSERT INTO AllStocks VALUES
                     (
-                    "{SearchedBy.replace(' ','')}",
+                    "{(SearchedBy.replace(' ','')).lower}",
                     "{name}",
                     "{date}",
                     "{time}",
@@ -69,7 +69,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
     # Adds the values to its corresponding database
     c.execute(f'''INSERT INTO {title} VALUES
                     (
-                    "{SearchedBy.replace(' ','')}",
+                    "{(SearchedBy.replace(' ','')).lower}",
                     "{name}",
                     "{date}",
                     "{time}",
@@ -101,7 +101,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
             # Adds values to the Watchlist database if the target price is greater than the current price
             c.execute(f'''INSERT INTO Watchlist VALUES
                 (
-                "{SearchedBy.replace(' ','')}",
+                "{(SearchedBy.replace(' ','')).lower}",
                 "{name}",
                 "{date}",                    
                 "{time}",
