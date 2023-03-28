@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import OperationalError
 
 
-def add_to_db(name, date, time, priceFloat, targetPrice):
+def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
     def create_title_for_db(name):
         title = name.replace(' ','')
         title = title.replace('&','')
@@ -25,6 +25,7 @@ def add_to_db(name, date, time, priceFloat, targetPrice):
     try:
         c.execute('''CREATE TABLE AllStocks
                     (
+                    SearchedBy,
                     Name,
                     Date,
                     Time,
@@ -39,6 +40,7 @@ def add_to_db(name, date, time, priceFloat, targetPrice):
     # Adds the values to the All Stocks database
     c.execute(f'''INSERT INTO AllStocks VALUES
                     (
+                    "{SearchedBy.replace(' ','')}",
                     "{name}",
                     "{date}",
                     "{time}",
@@ -51,6 +53,7 @@ def add_to_db(name, date, time, priceFloat, targetPrice):
         # Create table for the stock
         c.execute(f'''CREATE TABLE {title}
                         (
+                        SearchedBy,
                         Name,
                         Date,    
                         Time,
@@ -66,6 +69,7 @@ def add_to_db(name, date, time, priceFloat, targetPrice):
     # Adds the values to its corresponding database
     c.execute(f'''INSERT INTO {title} VALUES
                     (
+                    "{SearchedBy.replace(' ','')}",
                     "{name}",
                     "{date}",
                     "{time}",
@@ -84,6 +88,7 @@ def add_to_db(name, date, time, priceFloat, targetPrice):
             try:
                 c.execute('''CREATE TABLE Watchlist
                     (
+                    SearchedBy
                     Name,
                     Date,
                     Time,
@@ -96,6 +101,7 @@ def add_to_db(name, date, time, priceFloat, targetPrice):
             # Adds values to the Watchlist database if the target price is greater than the current price
             c.execute(f'''INSERT INTO Watchlist VALUES
                 (
+                "{SearchedBy.replace(' ','')}",
                 "{name}",
                 "{date}",                    
                 "{time}",
