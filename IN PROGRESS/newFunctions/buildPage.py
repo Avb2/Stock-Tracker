@@ -1,3 +1,4 @@
+import sqlite3
 import threading
 from tkinter import *
 from tkinter.ttk import Combobox
@@ -19,10 +20,35 @@ def build_page(lock):
         stockInputField = Combobox(root)
         stockInputField.grid(row=2, column=1)
 
+    def get_combobox_values():
+        # Connect to sqlite db
+        connectionPool = sqlite3.connect('new-data-stocks.db')
+        c = connectionPool.cursor()
+
+        # Collects all table names from the sqlite database and creates a tuple
+        c.execute(f'SELECT tbl_name FROM sqlite_master')
+        allStocksTuple = c.fetchall()
+
+        allStocks = []
+
+        # Iterates through the tuple containing all the stock names and adds them to a new list
+        for COUNT, x in enumerate(allStocksTuple):
+            allStocks += x
+
+        # Remove watchlist and allstocks tables from the list of stock names so they don't appear in the drop down menu
+        allStocks.remove('Watchlist')
+        allStocks.remove('AllStocks')
+
+        return allStocks
+
+    # Value for autorun set to false so autorun doesnt initiate
+    autorunValue = False
+
+    # Gets values for the combobox drop down
+    combobox_values = get_combobox_values()
+
     # Initialize tkinter widget
     root = Tk()
-
-    autorunValue = False
 
     # Adding padding between labels
     root.columnconfigure(1, pad=8)
@@ -37,7 +63,7 @@ def build_page(lock):
     stockTitleLabel.grid(row=1, column=1, sticky='nsew')
 
     # Stock input field
-    stockInputField = Combobox(root)
+    stockInputField = Combobox(root, values=combobox_values)
     stockInputField.grid(row=2, column=1)
 
     # Target price title label
