@@ -3,6 +3,7 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *
+from newFunctions.databaseQuerying import add_to_db
 
 
 def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
@@ -41,28 +42,47 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
         # Find the previous closing price
         stockPreviousClosingPrice = result.find('div', {'class': 'P6K39c'}).string
 
+        def collect_time():
+            # Get timestamp
+            time = str(datetime.now())[11:16]
+            return time
+        def collect_date():
+            date = str(datetime.now())[:11]
+            return date
+
         def create_stock_info_labels(root):
+            time = collect_time()
+            date = collect_date()
+
+            # Time/ Date Title label
             timeDateTitleLabel = Label(root, text='Date/Time', borderwidth=1.5, relief='solid', font=('Arial', 16))
             timeDateTitleLabel.grid(row=3, column=1, sticky='nsew')
 
+            # Stock Title label
             stockTitleLabel = Label(root, text='Name', borderwidth=1.5, relief='solid', font=('Arial', 16))
             stockTitleLabel.grid(row=3, column=2, sticky='nsew')
 
+            # Price Title label
             priceTitleLabel = Label(root, text='Price', borderwidth=1.5, relief='solid', font=('Arial', 16))
             priceTitleLabel.grid(row=3, column=3, sticky='nsew')
 
+            # Closing price Title label
             closingPriceTitleLabel = Label(root, text='Closing Price', borderwidth=1.5, relief='solid', font=('Arial', 16))
             closingPriceTitleLabel.grid(row=3, column=4, sticky='nsew')
 
-            currentTimeDateLabel = Label(root, text=f'{str(datetime.now())[:11]} : {str(datetime.now())[11:16]}', font=('Arial', 16))
+            # Displays current time/date
+            currentTimeDateLabel = Label(root, text=f'{date} : {time}', font=('Arial', 16))
             currentTimeDateLabel.grid(row=4 + index, column=1, sticky='nsew')
 
+            # Displays stock name
             stockNameLabel = Label(root, text=f'{stockName}: ', font=('Arial', 16))
             stockNameLabel.grid(row=4 + index, column=2, sticky='nsew')
 
+            # Displays stock price
             stockPriceLabel = Label(root, text=stockPrice, font=('Arial', 16))
             stockPriceLabel.grid(row=4 + index, column=3, sticky='nsew')
 
+            # Displays Previous closing price
             stockPreviousClosingPriceLabel = Label(root, text=stockPreviousClosingPrice, font=('Arial', 16))
             stockPreviousClosingPriceLabel.grid(row=4 + index, column=4, sticky='nsew')
 
@@ -70,8 +90,12 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
             for num in range(index):
                 root.rowconfigure(num + 4, pad=10)
 
-
         create_stock_info_labels(root)
+
+        time = collect_time()
+        date = collect_date()
+
+        add_to_db(name=stockName, priceFloat=float(stockPrice.replace('$', '')), date=date, time=time, targetPrice=listOfTargetPrices[index])
 
     for index, stockBeingScraped in enumerate(listOfStocksBeingScraped):
         scrape_stock_info_thread = threading.Thread(target=scrape_stock_info, args=(stockBeingScraped, index))
