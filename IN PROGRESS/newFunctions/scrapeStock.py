@@ -19,6 +19,7 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
     listOfTargetPrices = listOfTargetPrices.split(',')
 
     def scrape_stock_info(stockBeingScraped, index):
+
         # Adds the stock being scraped from the stock list to the url
         url = f'https://www.google.com/finance?q={stockBeingScraped}'.replace(' ', '')
 
@@ -39,6 +40,8 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
 
         print(stockName, stockPrice)
 
+        # WHat the user searched the stock by
+        SearchedBy = listOfStocksBeingScraped
         # Find the previous closing price
         stockPreviousClosingPrice = result.find('div', {'class': 'P6K39c'}).string
 
@@ -95,7 +98,7 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
         time = collect_time()
         date = collect_date()
 
-        add_to_db(name=stockName, priceFloat=float(stockPrice.replace('$', '')), date=date, time=time, targetPrice=listOfTargetPrices[index])
+        add_to_db(SearchedBy=SearchedBy[index], name=stockName, priceFloat=float(stockPrice.replace('$', '')), date=date, time=time, targetPrice=listOfTargetPrices[index])
 
     for index, stockBeingScraped in enumerate(listOfStocksBeingScraped):
         scrape_stock_info_thread = threading.Thread(target=scrape_stock_info, args=(stockBeingScraped, index))
