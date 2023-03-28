@@ -1,6 +1,9 @@
+import threading
 from tkinter import *
 from tkinter.ttk import Combobox
 from newFunctions.scrapeStock import collect_stock_info
+from newFunctions.autorunStocks import autorun
+from newFunctions.autorunStocks import end_auto_run
 
 
 def build_page(lock):
@@ -18,6 +21,8 @@ def build_page(lock):
 
     # Initialize tkinter widget
     root = Tk()
+
+    autorunValue = False
 
     # Adding padding between labels
     root.columnconfigure(1, pad=8)
@@ -53,6 +58,18 @@ def build_page(lock):
     buttonClear = Button(root, text='Clear', activeforeground='magenta', font=('Arial', 16),
                          command=lambda: clear_page(targetPriceInputField, stockInputField))
     buttonClear.grid(row=2, column=4, sticky='nsew')
+
+    # Auto Run button
+    autorunThread = threading.Thread(target=autorun, args=(stockInputField, targetPriceInputField))
+
+    buttonAutoRun = Button(root, text='Auto Run', font=('Arial', 16), command=lambda: autorunThread.start())
+    buttonAutoRun.grid(row=3, column=3, sticky='nsew')
+
+    # Auto Run End Button
+
+    buttonEndAutoRun = Button(root, text='End', font=('Arial', 16), command=lambda: end_auto_run())
+    buttonEndAutoRun.grid(row=3, column=4, sticky='nsew')
+
 
     # Run tkinter root
     root.mainloop()
