@@ -1,4 +1,5 @@
 import sqlite3
+from sqlite3 import OperationalError
 import threading
 from tkinter import *
 from tkinter.ttk import Combobox
@@ -26,26 +27,20 @@ def build_page(lock):
         c = connectionPool.cursor()
 
         # Collects all table names from the sqlite database and creates a tuple
-        c.execute(f'SELECT tbl_name FROM sqlite_master')
+        c.execute(f'SELECT SearchedBy FROM AllStocks')
         allStocksTuple = c.fetchall()
 
         allStocks = []
 
-        # Iterates through the tuple containing all the stock names and adds them to a new list
+        # Adds the value to the drop down box if the value is not already on the list
         for COUNT, x in enumerate(allStocksTuple):
-            allStocks += x
-
-        # Remove watchlist and allstocks tables from the list of stock names so they don't appear in the drop down menu
-        allStocks.remove('Watchlist')
-        allStocks.remove('AllStocks')
+            if x not in allStocks:
+                allStocks += [x]
 
         return allStocks
 
     # Value for autorun set to false so autorun doesnt initiate
     autorunValue = False
-
-    # Gets values for the combobox drop down
-    combobox_values = get_combobox_values()
 
     # Initialize tkinter widget
     root = Tk()
@@ -63,8 +58,18 @@ def build_page(lock):
     stockTitleLabel.grid(row=1, column=1, sticky='nsew')
 
     # Stock input field
-    stockInputField = Combobox(root, values=combobox_values)
-    stockInputField.grid(row=2, column=1)
+    try:
+        # Gets values for the combobox drop down
+        combobox_values = get_combobox_values()
+
+        stockInputField = Combobox(root, values=combobox_values)
+        stockInputField.grid(row=2, column=1)
+
+    except OperationalError:
+        stockInputField = Combobox(root)
+        stockInputField.grid(row=2, column=1)
+
+
 
     # Target price title label
     targetPriceTitleLabel = Label(root, text='Target Price', foreground='red')
