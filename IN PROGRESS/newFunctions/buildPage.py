@@ -4,12 +4,17 @@ from newFunctions.scrapeStock import collect_stock_info
 
 
 def build_page(lock):
-    def clear_page(root, lock):
-        def rebuild_page():
-            build_page(lock)
+    def clear_page(targetPriceInputField, stockInputField):
+        targetPriceInputField.grid_forget()
 
-        root.destroy()
-        rebuild_page()
+        # Target price input field
+        targetPriceInputField = Entry(root)
+        targetPriceInputField.grid(row=2, column=2)
+
+        stockInputField.grid_forget()
+        # Stock input field
+        stockInputField = Combobox(root)
+        stockInputField.grid(row=2, column=1)
 
     # Initialize tkinter widget
     root = Tk()
@@ -46,7 +51,7 @@ def build_page(lock):
 
     # Clear Button
     buttonClear = Button(root, text='Clear', activeforeground='magenta', font=('Arial', 16),
-                         command=lambda: clear_page(root, lock))
+                         command=lambda: clear_page(targetPriceInputField, stockInputField))
     buttonClear.grid(row=2, column=4, sticky='nsew')
 
     # Run tkinter root
