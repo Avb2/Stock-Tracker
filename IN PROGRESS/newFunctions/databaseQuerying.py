@@ -7,10 +7,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
         title = name.replace(' ','')
         title = title.replace('&','')
         title = title.replace('.','')
-        print(title)
         return title
-
-    print(name, targetPrice)
 
     # Connect to sqlite db
     connectionPool = sqlite3.connect('new-data-stocks.db')
@@ -40,7 +37,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
     # Adds the values to the All Stocks database
     c.execute(f'''INSERT INTO AllStocks VALUES
                     (
-                    "{(SearchedBy.replace(' ','')).lower}",
+                    "{SearchedBy.replace(' ','')}",
                     "{name}",
                     "{date}",
                     "{time}",
@@ -69,7 +66,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
     # Adds the values to its corresponding database
     c.execute(f'''INSERT INTO {title} VALUES
                     (
-                    "{(SearchedBy.replace(' ','')).lower}",
+                    "{SearchedBy.replace(' ','')}",
                     "{name}",
                     "{date}",
                     "{time}",
@@ -101,7 +98,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
             # Adds values to the Watchlist database if the target price is greater than the current price
             c.execute(f'''INSERT INTO Watchlist VALUES
                 (
-                "{(SearchedBy.replace(' ','')).lower}",
+                "{SearchedBy.replace(' ','')}",
                 "{name}",
                 "{date}",                    
                 "{time}",
