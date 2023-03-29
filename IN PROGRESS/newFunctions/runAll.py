@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from tkinter import *
 from newFunctions.databaseQuerying import add_to_db
+from newFunctions.modelStocks import showPlot
 
 
 def run_all_stocks(root, lock):
@@ -72,6 +73,10 @@ def run_all_stocks(root, lock):
             date = str(datetime.now())[:11]
             return date
 
+        def create_graph_button(root):
+            buttonGraphPrices = Button(root, text='Graph', command=lambda: showPlot(stockName))
+            buttonGraphPrices.grid(row=5 + index, column=5)
+
         def create_stock_info_labels(root):
             time = collect_time()
             date = collect_date()
@@ -114,6 +119,7 @@ def run_all_stocks(root, lock):
                 root.rowconfigure(num + 4, pad=10)
 
         create_stock_info_labels(root)
+        create_graph_button(root)
 
         time = collect_time()
         date = collect_date()
