@@ -36,15 +36,23 @@ def get_combobox_values():
 def build_page(lock):
     def clear_page(targetPriceInputField, stockInputField):
         targetPriceInputField.grid_forget()
-
         # Target price input field
         targetPriceInputField = Entry(root)
         targetPriceInputField.grid(row=2, column=2)
 
         stockInputField.grid_forget()
         # Stock input field
-        stockInputField = Combobox(root)
-        stockInputField.grid(row=2, column=1)
+        try:
+            # Gets values for the combobox drop down
+            comboboxValues = get_combobox_values()
+
+            stockInputField = Combobox(root, values=comboboxValues)
+            stockInputField.grid(row=2, column=1)
+
+        except OperationalError:
+            stockInputField = Combobox(root)
+            stockInputField.grid(row=2, column=1)
+
 
     comboboxValues = get_combobox_values()
 
@@ -110,6 +118,7 @@ def build_page(lock):
     # Run All Button
     buttonRunAll = Button(root, text='Run All', font=('Arial', 16), command=lambda: run_all_stocks(root, lock))
     buttonRunAll.grid(row=2, column=5, sticky='nsew')
+
 
     # Run tkinter root
     root.mainloop()
