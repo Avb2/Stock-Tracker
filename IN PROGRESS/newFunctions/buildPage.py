@@ -6,6 +6,31 @@ from tkinter.ttk import Combobox
 from newFunctions.scrapeStock import collect_stock_info
 from newFunctions.autorunStocks import autorun
 from newFunctions.autorunStocks import end_auto_run
+from newFunctions.runAll import run_all_stocks
+
+
+def get_combobox_values():
+    # Connect to sqlite db
+    connectionPool = sqlite3.connect('new-data-stocks.db')
+    c = connectionPool.cursor()
+
+    # Collects all table names from the sqlite database and creates a tuple
+    c.execute(f'SELECT SearchedBy FROM AllStocks')
+    allStocksTuple = c.fetchall()
+
+    allStocks = []
+
+    # Adds the value to the drop down box if the value is not already on the list
+    for COUNT, x in enumerate(allStocksTuple):
+        if x not in allStocks:
+            allStocks += [x]
+
+    # Converted tuple to list
+    comboboxValuesList = []
+    for values in allStocks:
+        comboboxValuesList += list(values)
+
+    return comboboxValuesList
 
 
 def build_page(lock):
@@ -21,23 +46,7 @@ def build_page(lock):
         stockInputField = Combobox(root)
         stockInputField.grid(row=2, column=1)
 
-    def get_combobox_values():
-        # Connect to sqlite db
-        connectionPool = sqlite3.connect('new-data-stocks.db')
-        c = connectionPool.cursor()
-
-        # Collects all table names from the sqlite database and creates a tuple
-        c.execute(f'SELECT SearchedBy FROM AllStocks')
-        allStocksTuple = c.fetchall()
-
-        allStocks = []
-
-        # Adds the value to the drop down box if the value is not already on the list
-        for COUNT, x in enumerate(allStocksTuple):
-            if x not in allStocks:
-                allStocks += [x]
-
-        return allStocks
+    comboboxValues = get_combobox_values()
 
     # Value for autorun set to false so autorun doesnt initiate
     autorunValue = False
@@ -60,16 +69,14 @@ def build_page(lock):
     # Stock input field
     try:
         # Gets values for the combobox drop down
-        combobox_values = get_combobox_values()
+        comboboxValues = get_combobox_values()
 
-        stockInputField = Combobox(root, values=combobox_values)
+        stockInputField = Combobox(root, values=comboboxValues)
         stockInputField.grid(row=2, column=1)
 
     except OperationalError:
         stockInputField = Combobox(root)
         stockInputField.grid(row=2, column=1)
-
-
 
     # Target price title label
     targetPriceTitleLabel = Label(root, text='Target Price', foreground='red')
@@ -97,10 +104,12 @@ def build_page(lock):
     buttonAutoRun.grid(row=3, column=3, sticky='nsew')
 
     # Auto Run End Button
-
     buttonEndAutoRun = Button(root, text='End', font=('Arial', 16), command=lambda: end_auto_run())
     buttonEndAutoRun.grid(row=3, column=4, sticky='nsew')
 
+    # Run All Button
+    buttonRunAll = Button(root, text='Run All', font=('Arial', 16), command=lambda: run_all_stocks(root, lock))
+    buttonRunAll.grid(row=2, column=5, sticky='nsew')
 
     # Run tkinter root
     root.mainloop()
@@ -108,3 +117,5 @@ def build_page(lock):
     # Update widget size whenever new elements are added
     root.update_idletasks()
     root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
+
+
