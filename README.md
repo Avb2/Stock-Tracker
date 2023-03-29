@@ -23,7 +23,7 @@
     <li> Input a target price you would like the stock to reach</li>
     <li>Press 'Auto Run' button</li>
     <br><p>The stock you have inputted will be scraped every 10 minutes. If the price of the stock is less than the target price, an email will be sent to you.</p>
-    <li>Click the 'Stop' button to end the Auto Run thread</li>
+    <li>Click the 'End' button to end the Auto Run thread</li>
     <br><p>NOTE: You can still scrape other stocks while auto run is active</p>
     <br><p>NOTE: You must use an outlook email to send the emails, gmail will not work</p>
    </ul>
