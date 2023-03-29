@@ -52,10 +52,7 @@ def build_page(lock):
         except OperationalError:
             stockInputField = Combobox(root)
             stockInputField.grid(row=2, column=1)
-
-
-    comboboxValues = get_combobox_values()
-
+          
     # Value for autorun set to false so autorun doesnt initiate
     autorunValue = False
 
