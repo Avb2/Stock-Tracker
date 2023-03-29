@@ -4,8 +4,8 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *
-from newFunctions.databaseQuerying import add_to_db
-from newFunctions.modelStocks import showPlot
+from functions.databaseQuerying import add_to_db
+from functions.modelStocks import showPlot
 
 
 def run_all_stocks(root, lock):
