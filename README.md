@@ -11,11 +11,10 @@
     <li>Input the name or ticker of the stock or select it from the drop down menu</li>
     <li>Input a target price you would like the stock to reach</li>
     <li>Click the 'enter' button</li>
-    <li>Click the 'show' button to display stock information in the GUI</li>
     <h2>Output:</h2>
-    <li>The current time, name of the stock, and the price will be displayed on the tkinter widget</li>
-    <li>The stock information, date and time will be added to corresponding databases in data-stocks.db</li>
-    <li>Models will be created and available to be viewed in your IDE, if using PyCharm, under the SciView tab</li>
+    <li>The current time, name of the stock, the price, and previous closing price will be displayed on the tkinter widget</li>
+    <li>The stock information, date and time will be added to corresponding databases in new-data-stocks.db</li>
+    <li>Models will be created and available to be viewed by clicking the 'Graph' button</li>
   </ul>
   
   <h2>Using Auto Run feature </h2>
