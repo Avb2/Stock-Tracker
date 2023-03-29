@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from tkinter import *
 from newFunctions.databaseQuerying import add_to_db
+from newFunctions.modelStocks import showPlot
 
 
 def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
@@ -11,8 +12,6 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
     # Collect stocks from input field
     listOfStocksBeingScraped = stockInputField.get()
     listOfStocksBeingScraped = listOfStocksBeingScraped.split(',')
-
-    print(listOfStocksBeingScraped)
 
     # Collect target prices from input field
     listOfTargetPrices = targetPriceInputField.get()
@@ -40,8 +39,11 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
 
         print(stockName, stockPrice)
 
-        # WHat the user searched the stock by
-        SearchedBy = listOfStocksBeingScraped
+        SearchedBy = []
+        # What the user searched the stock by
+        for theStock in listOfStocksBeingScraped:
+            SearchedBy += [theStock.lower()]
+
         # Find the previous closing price
         stockPreviousClosingPrice = result.find('div', {'class': 'P6K39c'}).string
 
@@ -49,9 +51,14 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
             # Get timestamp
             time = str(datetime.now())[11:16]
             return time
+
         def collect_date():
             date = str(datetime.now())[:11]
             return date
+
+        def create_graph_button(root):
+            buttonGraphPrices = Button(root, text='Graph', command=lambda: showPlot(stockName))
+            buttonGraphPrices.grid(row=5 + index, column=5)
 
         def create_stock_info_labels(root):
             time = collect_time()
@@ -99,6 +106,7 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
         date = collect_date()
 
         add_to_db(SearchedBy=SearchedBy[index], name=stockName, priceFloat=float(stockPrice.replace('$', '')), date=date, time=time, targetPrice=listOfTargetPrices[index])
+        create_graph_button(root)
 
     for index, stockBeingScraped in enumerate(listOfStocksBeingScraped):
         scrape_stock_info_thread = threading.Thread(target=scrape_stock_info, args=(stockBeingScraped, index))
