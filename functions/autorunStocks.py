@@ -1,9 +1,11 @@
 import smtplib
+import sqlite3
 import threading
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 import time
+from functions.databaseQuerying import add_to_db
 
 
 def end_auto_run():
@@ -13,6 +15,10 @@ def end_auto_run():
 
 
 def autorun(stockInputField, targetPriceInputField):
+    # Connect to sqlite db
+    connectionPool = sqlite3.connect('new-data-stocks.db')
+    c = connectionPool.cursor()
+
     # Changes the autorun value to True so the auto run while loop is initiated
     global autorunValue
     autorunValue = True
@@ -30,6 +36,16 @@ def autorun(stockInputField, targetPriceInputField):
     listOfSentEmails = []
 
     while autorunValue:
+        def collect_time():
+            # Get timestamp
+            time = str(datetime.now())[11:16]
+            return time
+
+        def collect_date():
+            # Get date
+            date = str(datetime.now())[:11]
+            return date
+
         def auto_run_scrape_stock_info(stockBeingScraped, index):
             # Adds the stock being scraped from the stock list to the url
             url = f'https://www.google.com/finance?q={stockBeingScraped}'.replace(' ', '')
@@ -52,15 +68,6 @@ def autorun(stockInputField, targetPriceInputField):
             stockPrice = (result.find('div', {'class': 'YMlKec fxKbKc'})).string
 
             def send_email_if_price_greater_than_tp(listOfSentEmails):
-                def collect_time():
-                    # Get timestamp
-                    time = str(datetime.now())[11:16]
-                    return time
-
-                def collect_date():
-                    # Get date
-                    date = str(datetime.now())[:11]
-                    return date
 
                 try:
                     time = collect_time()
@@ -73,10 +80,10 @@ def autorun(stockInputField, targetPriceInputField):
 
                     # Login to the outlook email address the emails will be sent from
                     smtp_conn.starttls()
-                    smtp_conn.login('hotsauceinmypants@outlook.com', 'usingpython12')
+                    smtp_conn.login('yourEmail@outlook.com', 'yourPassword')
 
                     # Fill in the send/recieve addresses
-                    from_addr = 'hotsauceinmypants@outlook.com'
+                    from_addr = 'stocktrackerpythonscript@outlook.com'
                     to_addr = 'bringuel.alexander@gmail.com'
 
                     # Email content
@@ -94,15 +101,25 @@ def autorun(stockInputField, targetPriceInputField):
                     # Adds the sent email to the list of sent emails so it wont send anymore about that stock
                     listOfSentEmails += [stockName]
 
-                except:
-                    pass
+                except TypeError:
+                    print(TypeError)
 
 
                 print(stockName, stockPrice, listOfTargetPrices[index])
 
             # If the price is below or equal to the target price, and the stock is not on the list of sent emails; an email will be sent to the specified address
             if float(stockPrice.replace('$', '')) <= float(listOfTargetPrices[index]) and stockName not in listOfSentEmails:
+                print(float(stockPrice.replace('$', '')), float(listOfTargetPrices[index]))
                 send_email_if_price_greater_than_tp(listOfSentEmails)
+            
+            # Gets time and date
+            Date = collect_date()
+            Time = collect_time()
+            
+            # adds the stock information to the database
+            add_to_db(SearchedBy=stockBeingScraped, name=stockName, priceFloat=float(stockPrice.replace('$', '')), date=Date,
+                      time=Time, targetPrice=0)
+
 
             # Sleep for .1 seconds to prevent URL's being printed together in the terminal
             time.sleep(.1)
