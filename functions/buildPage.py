@@ -3,10 +3,10 @@ from sqlite3 import OperationalError
 import threading
 from tkinter import *
 from tkinter.ttk import Combobox
-from newFunctions.scrapeStock import collect_stock_info
-from newFunctions.autorunStocks import autorun
-from newFunctions.autorunStocks import end_auto_run
-from newFunctions.runAll import run_all_stocks
+from functions.scrapeStock import collect_stock_info
+from functions.autorunStocks import autorun
+from functions.autorunStocks import end_auto_run
+from functions.runAll import run_all_stocks
 
 
 def get_combobox_values():
