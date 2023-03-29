@@ -1,5 +1,5 @@
 import threading
-from newFunctions.buildPage import build_page
+from functions.buildPage import build_page
 
 lock = threading.Lock()
 
