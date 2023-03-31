@@ -1,4 +1,5 @@
 import sqlite3
+import tkinter
 from sqlite3 import OperationalError
 import threading
 from tkinter import *
@@ -37,7 +38,7 @@ def build_page(lock):
     def clear_page(targetPriceInputField, stockInputField):
         targetPriceInputField.grid_forget()
         # Target price input field
-        targetPriceInputField = Entry(root)
+        targetPriceInputField = Entry(userInputFrame)
         targetPriceInputField.grid(row=2, column=2)
 
         stockInputField.grid_forget()
@@ -46,75 +47,84 @@ def build_page(lock):
             # Gets values for the combobox drop down
             comboboxValues = get_combobox_values()
 
-            stockInputField = Combobox(root, values=comboboxValues)
+            stockInputField = Combobox(userInputFrame, values=comboboxValues)
             stockInputField.grid(row=2, column=1)
 
         except OperationalError:
-            stockInputField = Combobox(root)
+            stockInputField = Combobox(userInputFrame)
             stockInputField.grid(row=2, column=1)
-          
+
     # Value for autorun set to false so autorun doesnt initiate
     autorunValue = False
 
     # Initialize tkinter widget
     root = Tk()
 
-    # Adding padding between labels
-    root.columnconfigure(1, pad=8)
-    root.columnconfigure(2, pad=8)
-    root.columnconfigure(3, pad=8)
-    root.columnconfigure(4, pad=8)
-    root.rowconfigure(2, pad=15)
+
+
+    ############################# Create frame for headers
+    frameHeader = Frame(root)
+    frameHeader.grid(row=1, column=1, sticky='nsew')
 
     # Stock title label
-    stockTitleLabel = Label(root, text='Stocks', foreground='red')
+    stockTitleLabel = Label(frameHeader, text='Stocks', foreground='red')
     stockTitleLabel.configure(font=('Arial', 18))
     stockTitleLabel.grid(row=1, column=1, sticky='nsew')
+
+    # Target price title label
+    targetPriceTitleLabel = Label(frameHeader, text='Target Price', foreground='red')
+    targetPriceTitleLabel.configure(font=('Arial', 18))
+    targetPriceTitleLabel.grid(row=2, column=1, sticky='nsew')
+
+
+    ############################ Create frame for input fields
+    userInputFrame = Frame(root)
+    userInputFrame.grid(row=1, column=2, sticky='nsew')
 
     # Stock input field
     try:
         # Gets values for the combobox drop down
         comboboxValues = get_combobox_values()
 
-        stockInputField = Combobox(root, values=comboboxValues)
-        stockInputField.grid(row=2, column=1)
+        stockInputField = Combobox(userInputFrame, values=comboboxValues)
+        stockInputField.grid(row=1, column=1)
 
     except OperationalError:
-        stockInputField = Combobox(root)
-        stockInputField.grid(row=2, column=1)
-
-    # Target price title label
-    targetPriceTitleLabel = Label(root, text='Target Price', foreground='red')
-    targetPriceTitleLabel.configure(font=('Arial', 18))
-    targetPriceTitleLabel.grid(row=1, column=2, sticky='nsew')
+        stockInputField = Combobox(userInputFrame)
+        stockInputField.grid(row=1, column=1)
 
     # Target price input field
-    targetPriceInputField = Entry(root)
-    targetPriceInputField.grid(row=2, column=2)
+    targetPriceInputField = Entry(userInputFrame)
+    targetPriceInputField.grid(row=2, column=1)
+
+
+    ########################### Create frame for buttons
+    frameButtons = Frame(root)
+    frameButtons.grid(row=1, column=3, sticky='nsew')
 
     # Enter Button
-    buttonEnter = Button(root, text='Enter', activeforeground='magenta', font=('Arial', 16),
+    buttonEnter = Button(frameButtons, text='Enter', activeforeground='magenta', font=('Arial', 16),
                          command=lambda: collect_stock_info(root, stockInputField, targetPriceInputField, lock))
-    buttonEnter.grid(row=2, column=3, sticky='nsew')
+    buttonEnter.grid(row=1, column=1, sticky='nsew')
 
     # Clear Button
-    buttonClear = Button(root, text='Clear', activeforeground='magenta', font=('Arial', 16),
-                         command=lambda: clear_page(targetPriceInputField, stockInputField))
-    buttonClear.grid(row=2, column=4, sticky='nsew')
+    buttonClear = Button(frameButtons, text='Clear', activeforeground='magenta', font=('Arial', 16), command=lambda: clear_page(targetPriceInputField, stockInputField))
+    buttonClear.grid(row=1, column=2, sticky='nsew')
+
+    # Run All Button
+    buttonRunAll = Button(frameButtons, text='Run All', font=('Arial', 16), command=lambda: run_all_stocks(root, lock))
+    buttonRunAll.grid(row=1, column=3, sticky='nsew')
 
     # Auto Run button
     autorunThread = threading.Thread(target=autorun, args=(stockInputField, targetPriceInputField))
 
-    buttonAutoRun = Button(root, text='Auto Run', font=('Arial', 16), command=lambda: autorunThread.start())
-    buttonAutoRun.grid(row=3, column=3, sticky='nsew')
+    buttonAutoRun = Button(frameButtons, text='Auto Run', font=('Arial', 16), command=lambda: autorunThread.start())
+    buttonAutoRun.grid(row=2, column=1, sticky='nsew')
 
     # Auto Run End Button
-    buttonEndAutoRun = Button(root, text='End', font=('Arial', 16), command=lambda: end_auto_run())
-    buttonEndAutoRun.grid(row=3, column=4, sticky='nsew')
+    buttonEndAutoRun = Button(frameButtons, text='End', font=('Arial', 16), command=lambda: end_auto_run())
+    buttonEndAutoRun.grid(row=2, column=2, sticky='nsew')
 
-    # Run All Button
-    buttonRunAll = Button(root, text='Run All', font=('Arial', 16), command=lambda: run_all_stocks(root, lock))
-    buttonRunAll.grid(row=2, column=5, sticky='nsew')
 
 
     # Run tkinter root
