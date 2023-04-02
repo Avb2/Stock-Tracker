@@ -4,10 +4,18 @@ from sqlite3 import OperationalError
 
 def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
     def create_title_for_db(name):
-        title = name.replace(' ','')
-        title = title.replace('&','')
-        title = title.replace('.','')
+        if ' ' in name:
+            name = name.replace(' ','')
+        if '&' in name:
+            name = name.replace('&','')
+        if '.' in name:
+            name = name.replace('.','')
+        if ',' in name:
+            name = name.replace(',','')
+
+        title = name
         return title
+
 
     # Connect to sqlite db
     connectionPool = sqlite3.connect('new-data-stocks.db')
