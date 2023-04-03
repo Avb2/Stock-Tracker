@@ -31,6 +31,7 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
             stockName = (result.find('div', {'class': 'zzDege'})).string
 
         except AttributeError:
+            print(stockBeingScraped, url)
             print('Name not found on google.com/finance')
             return
 
@@ -102,10 +103,10 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
 
         create_stock_info_labels(root)
 
-        time = collect_time()
+        theTime = collect_time()
         date = collect_date()
 
-        add_to_db(SearchedBy=SearchedBy[index], name=stockName, priceFloat=float(stockPrice.replace('$', '')), date=date, time=time, targetPrice=listOfTargetPrices[index])
+        add_to_db(SearchedBy=SearchedBy[index], name=stockName, priceFloat=float(stockPrice.replace('$', '')), date=date, time=theTime, targetPrice=listOfTargetPrices[index])
         create_graph_button(root)
 
     for index, stockBeingScraped in enumerate(listOfStocksBeingScraped):

@@ -77,7 +77,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
 
     # If the table already exists, an error message will be displayed in the terminal
     except OperationalError:
-        print('Operational Error: Could not create table.')
+        print('Operational Error: Could not create table, it already exists.')
 
     # Adds the values to its corresponding database
     c.execute(f'''INSERT INTO {title} VALUES
@@ -91,7 +91,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
     connectionPool.commit()
 
     # 'Finished' will be printed when the values have been added.
-    print('finished')
+    print('Values have been added to the database')
 
     try:
         # If the price of the stock is less than the specified target price, a watchlist table will be created in the database and values will be added
@@ -109,7 +109,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
                     )''')
 
             except OperationalError:
-                print('Operational Error: Could not create table.')
+                print('Operational Error: Could not create Watchlist.')
 
             # Adds values to the Watchlist database if the target price is greater than the current price
             c.execute(f'''INSERT INTO Watchlist VALUES
@@ -131,6 +131,6 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
         print('Operational Error: Could not insert values into the watchlist.')
     # If the user didnt include a target price, a message will be displayed in the terminal
     except ValueError:
-        print("You didn't include a target price.")
+        print("You did not include a target price.")
 
     connectionPool.close()

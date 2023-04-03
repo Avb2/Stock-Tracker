@@ -8,7 +8,7 @@ from functions.scrapeStock import collect_stock_info
 from functions.autorunStocks import autorun
 from functions.autorunStocks import end_auto_run
 from functions.runAll import run_all_stocks
-
+from functions.showPopularStocks import showPopularStocks
 
 def get_combobox_values():
     # Connect to sqlite db
@@ -37,9 +37,10 @@ def get_combobox_values():
 def build_page(lock):
     def clear_page(targetPriceInputField, stockInputField):
         targetPriceInputField.grid_forget()
+
         # Target price input field
         targetPriceInputField = Entry(userInputFrame)
-        targetPriceInputField.grid(row=2, column=2)
+        targetPriceInputField.grid(row=3, column=1, sticky='nsew')
 
         stockInputField.grid_forget()
         # Stock input field
@@ -60,11 +61,17 @@ def build_page(lock):
     # Initialize tkinter widget
     root = Tk()
 
+    ############################ Create frame for popular stocks
+    framePopularStocks = Frame(root)
+    showPopularStocks(root)
+    framePopularStocks.grid(row=1, column=1, sticky='nsew')
+
+
 
 
     ############################# Create frame for headers
-    frameHeader = Frame(root)
-    frameHeader.grid(row=1, column=1, sticky='nsew')
+    frameHeader = Frame(root, pady=10)
+    frameHeader.grid(row=2, column=1, sticky='nsew')
 
     # Stock title label
     stockTitleLabel = Label(frameHeader, text='Stocks', foreground='red')
@@ -78,8 +85,8 @@ def build_page(lock):
 
 
     ############################ Create frame for input fields
-    userInputFrame = Frame(root)
-    userInputFrame.grid(row=1, column=2, sticky='nsew')
+    userInputFrame = Frame(root, pady=10)
+    userInputFrame.grid(row=2, column=2, sticky='nsew')
 
     # Stock input field
     try:
@@ -87,20 +94,20 @@ def build_page(lock):
         comboboxValues = get_combobox_values()
 
         stockInputField = Combobox(userInputFrame, values=comboboxValues)
-        stockInputField.grid(row=1, column=1)
+        stockInputField.grid(row=1, column=1, sticky='nsew')
 
     except OperationalError:
         stockInputField = Combobox(userInputFrame)
-        stockInputField.grid(row=1, column=1)
+        stockInputField.grid(row=1, column=1, sticky='nsew')
 
     # Target price input field
     targetPriceInputField = Entry(userInputFrame)
-    targetPriceInputField.grid(row=2, column=1)
+    targetPriceInputField.grid(row=2, column=1, sticky='nsew')
 
 
     ########################### Create frame for buttons
-    frameButtons = Frame(root)
-    frameButtons.grid(row=1, column=3, sticky='nsew')
+    frameButtons = Frame(root, pady=10)
+    frameButtons.grid(row=2, column=3, sticky='nsew')
 
     # Enter Button
     buttonEnter = Button(frameButtons, text='Enter', activeforeground='magenta', font=('Arial', 16),
@@ -112,17 +119,17 @@ def build_page(lock):
     buttonClear.grid(row=1, column=2, sticky='nsew')
 
     # Run All Button
-    buttonRunAll = Button(frameButtons, text='Run All', font=('Arial', 16), command=lambda: run_all_stocks(root, lock))
+    buttonRunAll = Button(frameButtons, text='Run All', activeforeground='magenta', font=('Arial', 16), command=lambda: run_all_stocks(root, lock))
     buttonRunAll.grid(row=1, column=3, sticky='nsew')
 
     # Auto Run button
     autorunThread = threading.Thread(target=autorun, args=(stockInputField, targetPriceInputField))
 
-    buttonAutoRun = Button(frameButtons, text='Auto Run', font=('Arial', 16), command=lambda: autorunThread.start())
+    buttonAutoRun = Button(frameButtons, text='Auto Run', activeforeground='magenta', font=('Arial', 16), command=lambda: autorunThread.start())
     buttonAutoRun.grid(row=2, column=1, sticky='nsew')
 
     # Auto Run End Button
-    buttonEndAutoRun = Button(frameButtons, text='End', font=('Arial', 16), command=lambda: end_auto_run())
+    buttonEndAutoRun = Button(frameButtons, text='End', activeforeground='magenta', font=('Arial', 16), command=lambda: end_auto_run())
     buttonEndAutoRun.grid(row=2, column=2, sticky='nsew')
 
 

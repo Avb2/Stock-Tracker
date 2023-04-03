@@ -111,11 +111,11 @@ def autorun(stockInputField, targetPriceInputField):
             if float(stockPrice.replace('$', '')) <= float(listOfTargetPrices[index]) and stockName not in listOfSentEmails:
                 print(float(stockPrice.replace('$', '')), float(listOfTargetPrices[index]))
                 send_email_if_price_greater_than_tp(listOfSentEmails)
-            
+
             # Gets time and date
             Date = collect_date()
             Time = collect_time()
-            
+
             # adds the stock information to the database
             add_to_db(SearchedBy=stockBeingScraped, name=stockName, priceFloat=float(stockPrice.replace('$', '')), date=Date,
                       time=Time, targetPrice=0)
