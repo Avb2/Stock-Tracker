@@ -2,19 +2,26 @@ import sqlite3
 from sqlite3 import OperationalError
 
 
-def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
-    def create_title_for_db(name):
-        if ' ' in name:
-            name = name.replace(' ','')
-        if '&' in name:
-            name = name.replace('&','')
-        if '.' in name:
-            name = name.replace('.','')
-        if ',' in name:
-            name = name.replace(',','')
+def create_title_for_db(name):
+    if ' ' in name:
+        name = name.replace(' ', '')
+    if '&' in name:
+        name = name.replace('&', '')
+    if '.' in name:
+        name = name.replace('.', '')
+    if ',' in name:
+        name = name.replace(',', '')
+    if '/' in name:
+        name = name.replace('/', '')
+    if '(' in name:
+        name = name.replace('(', '')
+    if ')' in name:
+        name = name.replace(')', '')
+    title = name
+    return title
 
-        title = name
-        return title
+def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
+
 
 
     # Connect to sqlite db
@@ -23,6 +30,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
 
     # Creates title for db table
     title = create_title_for_db(name)
+    print(title)
 
 
 
