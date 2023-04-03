@@ -1,7 +1,9 @@
+import datetime
 from tkinter import *
 import sqlite3
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from functions.databaseQuerying import create_title_for_db
 
 
 def showPlot(stock):
@@ -13,11 +15,6 @@ def showPlot(stock):
     c = conn.cursor()
 
     def get_all_prices():
-        def create_title_for_db(name):
-            title = name.replace(' ', '')
-            title = title.replace('&', '')
-            title = title.replace('.', '')
-            return title
 
         title = create_title_for_db(stock)
 
@@ -36,8 +33,14 @@ def showPlot(stock):
         c.execute(f'SELECT Price FROM {title} WHERE Price > -1')
         AllPrices = c.fetchall()
 
-        # Convert prices to floats and add to list named price
-        stockPrice = [float(prices[0].replace('$', '')) for prices in AllPrices]
+        def convertPriceToFloat(priceString):
+            if isinstance(priceString, tuple):
+                priceString = priceString[0]
+
+            stockPrice = float(str(priceString).replace('$', ''))
+            return stockPrice
+
+        stockPrice = list(map(convertPriceToFloat, AllPrices))
 
         priceIndexes = []
 
