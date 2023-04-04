@@ -32,7 +32,21 @@
   <ul>
     <li>Click 'Run All'</li>
     <p>All stocks you have previously searched that are saved in your data-stocks.db file will be web scraped and the prices will be added to the db</p>
+    </ul>
     <br><p>NOTE: Once you start the Run All feature, you cannot end it until it is complete</p>
+   
+   <h2>Searching with sectors </h2>
+    <ul>
+    <li>Type 's tech', 's real estate', or 's finance' into the stock input field</li>
+    <li>Leave the target price input field empty</li>
+    <li>Click the 'Enter' Button</li>
+    </ul>
+  
+    
+    
+   <h2>Output</h2>
+    <p>A predefined list of popular stocks in the specified sector will be displayed to the user in the tkinter GUI</p>
+    <p>The stock information will be added to that sectors database table</p>
    
   <h2>Under the hood</h2>
   <ul>
