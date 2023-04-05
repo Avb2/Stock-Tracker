@@ -263,7 +263,7 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
         theTime = collect_time()
         date = collect_date()
 
-        add(SearchedBy=SearchedBy[index], name=stockName, priceFloat=round(float(stockPrice.replace('$', '')), 2),
+        add_to_db(SearchedBy=SearchedBy[index], name=stockName, priceFloat=round(float(stockPrice.replace('$', '')), 2),
             date=date, time=theTime, targetPrice=listOfTargetPrices[index])
         create_graph_button(root)
 
