@@ -3,18 +3,17 @@ from tkinter import *
 import sqlite3
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from functions.databaseQuerying import create_title_for_db
+from functions.databaseQuerying import create_title_for_db, establish_db_connection
 
 
 def showPlot(stock):
-    # create a new tkinter root
-    newroot = Tk()
+    def get_all_prices(c):
+        def convertPriceToFloat(priceString):
+            if isinstance(priceString, tuple):
+                priceString = priceString[0]
 
-    # Connect to db
-    conn = sqlite3.connect('new-data-stocks.db')
-    c = conn.cursor()
-
-    def get_all_prices():
+            stockPrice = float(str(priceString).replace('$', ''))
+            return stockPrice
 
         title = create_title_for_db(stock)
 
@@ -32,13 +31,6 @@ def showPlot(stock):
         # Pull all prices from tables
         c.execute(f'SELECT Price FROM {title} WHERE Price > -1')
         AllPrices = c.fetchall()
-
-        def convertPriceToFloat(priceString):
-            if isinstance(priceString, tuple):
-                priceString = priceString[0]
-
-            stockPrice = float(str(priceString).replace('$', ''))
-            return stockPrice
 
         stockPrice = list(map(convertPriceToFloat, AllPrices))
 
@@ -99,8 +91,14 @@ def showPlot(stock):
         # Add the canvas widget to the Tkinter window
         canvas.get_tk_widget().grid(row=1, column=1)
 
-    graphData = get_all_prices()
+    # create a new tkinter root
+    newroot = Tk()
+
+    # Connect to db
+    c = establish_db_connection()
+
+    graphData = get_all_prices(c[0])
     print(stock)
 
-    get_all_prices()
+    get_all_prices(c[0])
     plotGraph(graphData[0], graphData[1], graphData[2])
