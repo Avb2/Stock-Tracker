@@ -20,14 +20,13 @@ def create_title_for_db(name):
     title = name
     return title
 
+def establish_db_connection():
+    # Connect to sqlite db
+    connectionPool = sqlite3.connect('new-data-stocks.db')
+    c = connectionPool.cursor()
+    return c, connectionPool
 
 def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
-    def establish_db_connection():
-        # Connect to sqlite db
-        connectionPool = sqlite3.connect('new-data-stocks.db')
-        c = connectionPool.cursor()
-        return c, connectionPool
-
     def add_to_all_stocks_db():
         # Attempts to create the AllStocks table, which stores all web-scraped stock information in it
         try:
