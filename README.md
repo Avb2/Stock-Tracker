@@ -24,8 +24,8 @@
     <li>Press 'Auto Run' button</li>
     <br><p>The stock you have inputted will be scraped every 10 minutes. If the price of the stock is less than the target price, an email will be sent to you.</p>
     <li>Click the 'End' button to end the Auto Run thread</li>
-    <br><p>NOTE: You can still scrape other stocks while auto run is active</p>
-    <br><p>NOTE: You must use an outlook email to send the emails, gmail will not work</p>
+    <br><p><b>NOTE: You can still scrape other stocks while auto run is active</b></p>
+    <br><p><b>NOTE: You must use an outlook email to send the emails, gmail will not work</b></p>
    </ul>
   
   <h2>Using Run All feature </h2>
@@ -33,7 +33,7 @@
     <li>Click 'Run All'</li>
     <p>All stocks you have previously searched that are saved in your data-stocks.db file will be web scraped and the prices will be added to the db</p>
     </ul>
-    <br><p>NOTE: Once you start the Run All feature, you cannot end it until it is complete</p>
+  <br><p><b>NOTE: Once you start the Run All feature, you cannot end it until it is complete</b></p>
    
    <h2>Searching with sectors </h2>
     <ul>
@@ -42,11 +42,15 @@
     <li>Click the 'Enter' Button</li>
     </ul>
   
-    
+  <h2>Viewing Graphs</h2>
+  <p>After you have filled out the input fields and clicked the 'Enter' button, stock information will be displayed. Next to the closing price information is a 'Graph' button. Clicking this will display a graph of price history pulled from the new-data-stocks database file. </p>
+  <p>Normal plots on the graph will be displayed with the color blue, but the highest price will be displayed in pink</p>
+  <p>Increases in stock price will have a green line connecting the plots, and decreases will be connected with a red line
     
    <h2>Output</h2>
     <p>A predefined list of popular stocks in the specified sector will be displayed to the user in the tkinter GUI</p>
     <p>The stock information will be added to that sectors database table</p>
+    <p><b>NOTE: Data displayed on the graph will only be data that has been collected when you run that specific stock. Unless you are using the Auto Run feature and letting the program run, stocks will have to be searched manually.</b></p>
    
   <h2>Under the hood</h2>
   <ul>
