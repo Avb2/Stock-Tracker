@@ -1,28 +1,27 @@
 import smtplib
-import sqlite3
 import threading
 from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
 import time
 from functions.databaseQuerying import add_to_db
 from functions.databaseQuerying import establish_db_connection
+from functions.scrapeStock import request_and_parse
 
 
 def end_auto_run():
     global autorunValue
+    # The autorunvalue is set to false to end the auto run function
     autorunValue = False
     print('Autorun Ended')
 
 
 def autorun(stockInputField, targetPriceInputField):
     def collect_time():
-        # Get timestamp
+        # Get timestamp using datetime package
         time = str(datetime.now())[11:16]
         return time
 
     def collect_date():
-        # Get date
+        # Get date using datetime package
         date = str(datetime.now())[:11]
         return date
 
@@ -32,8 +31,7 @@ def autorun(stockInputField, targetPriceInputField):
         print(url)
 
         # Requests and bs4
-        request = requests.get(url)
-        result = BeautifulSoup(request.text, 'html.parser')
+        result = request_and_parse(url)
 
         try:
             # Find the stock name
@@ -50,6 +48,7 @@ def autorun(stockInputField, targetPriceInputField):
         def send_email_if_price_greater_than_tp(listOfSentEmails):
 
             try:
+                # Get time and date
                 time = collect_time()
                 date = collect_date()
 
@@ -84,6 +83,7 @@ def autorun(stockInputField, targetPriceInputField):
             except TypeError:
                 print(TypeError)
 
+            # Displays stock name, price, and target price in the console
             print(stockName, stockPrice, listOfTargetPrices[index])
 
         # If the price is below or equal to the target price, and the stock is not on the list of sent emails; an email will be sent to the specified address
@@ -95,7 +95,7 @@ def autorun(stockInputField, targetPriceInputField):
         Date = collect_date()
         Time = collect_time()
 
-        # adds the stock information to the database
+        # Adds the stock information to the database
         add_to_db(SearchedBy=stockBeingScraped, name=stockName, priceFloat=float(stockPrice.replace('$', '')),
                   date=Date,
                   time=Time, targetPrice=0)
@@ -103,6 +103,7 @@ def autorun(stockInputField, targetPriceInputField):
         # Sleep for .1 seconds to prevent URL's being printed together in the terminal
         time.sleep(.1)
 
+    # Connect to the database
     establish_db_connection()
 
     # Changes the autorun value to True so the auto run while loop is initiated
@@ -122,7 +123,7 @@ def autorun(stockInputField, targetPriceInputField):
     listOfSentEmails = []
 
     while autorunValue:
-
+        # While autorun is active, threads will be created to webscrape the stocks simultaneously using the auto_run_scrape_stock_info function
         for index, stockBeingScraped in enumerate(listOfStocksBeingScraped):
             autoRunThread_scrape = threading.Thread(target=auto_run_scrape_stock_info, args=(stockBeingScraped, index))
             autoRunThread_scrape.start()

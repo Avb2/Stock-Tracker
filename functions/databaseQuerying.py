@@ -17,14 +17,18 @@ def create_title_for_db(name):
         name = name.replace('(', '')
     if ')' in name:
         name = name.replace(')', '')
+    if '-' in name:
+        name = name.replace('-', '')
     title = name
     return title
+
 
 def establish_db_connection():
     # Connect to sqlite db
     connectionPool = sqlite3.connect('new-data-stocks.db')
     c = connectionPool.cursor()
     return c, connectionPool
+
 
 def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
     def add_to_all_stocks_db():
@@ -56,6 +60,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
         c[1].commit()
 
     def add_to_specified_stock_db():
+
         # Use a try/ except statement to test if a table with the same name already exists. If the table exists, the values will be added to the already existing table.
         try:
             # Create table for the stock
@@ -89,13 +94,16 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
         print('Values have been added to the database')
 
     def add_to_watchlist_db():
+        cursor = c[0]
+        connection = c[1]
+
         try:
             # If the price of the stock is less than the specified target price, a watchlist table will be created in the database and values will be added
             if priceFloat <= float(targetPrice):
 
                 # Creates a table called watchlist if one isnt created already. If an Operational Error occurs, 'Could not create table' will be displayed.
                 try:
-                    c[0].execute('''CREATE TABLE Watchlist
+                    cursor.execute('''CREATE TABLE Watchlist
                         (
                         SearchedBy
                         Name,
@@ -108,7 +116,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
                     print('Operational Error: Could not create Watchlist.')
 
                 # Adds values to the Watchlist database if the target price is greater than the current price
-                c[0].execute(f'''INSERT INTO Watchlist VALUES
+                cursor.execute(f'''INSERT INTO Watchlist VALUES
                     (
                     "{SearchedBy.replace(' ', '')}",
                     "{name}",
@@ -117,7 +125,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
                     "${priceFloat}"
                     )''')
 
-                c[1].commit()
+                connection.commit()
 
                 # Tells the user that the stock was added to the watchlist
                 print('Stock added to watchlist')
@@ -144,19 +152,14 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
     c[1].close()
 
 
-
 def add_to_db_for_sectors(sector, name, date, time, priceFloat):
-
-    def establish_db_connection():
-        # Connect to sqlite db
-        connectionPool = sqlite3.connect('new-data-stocks.db')
-        c = connectionPool.cursor()
-        return c, connectionPool
     def add_to_specified_stock_db():
+        establish_db_connection()
+
         # Use a try/ except statement to test if a table with the same name already exists. If the table exists, the values will be added to the already existing table.
         try:
             # Create table for the stock
-            c[0].execute(f'''CREATE TABLE {sector.replace(' ','')}
+            c[0].execute(f'''CREATE TABLE {sector.replace(' ', '')}
                             (
                             Name,
                             Date,    
@@ -171,7 +174,7 @@ def add_to_db_for_sectors(sector, name, date, time, priceFloat):
             print('Operational Error: Could not create table, it already exists.')
 
         # Adds the values to its corresponding database
-        c[0].execute(f'''INSERT INTO {sector.replace(' ','')} VALUES
+        c[0].execute(f'''INSERT INTO {sector.replace(' ', '')} VALUES
                         (
                         "{name}",
                         "{date}",
@@ -182,7 +185,6 @@ def add_to_db_for_sectors(sector, name, date, time, priceFloat):
 
         # 'Finished' will be printed when the values have been added.
         print('Values have been added to the database')
-
 
     c = establish_db_connection()
     add_to_specified_stock_db()

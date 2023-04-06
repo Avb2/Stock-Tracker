@@ -1,5 +1,3 @@
-import sqlite3
-import tkinter
 from sqlite3 import OperationalError
 import threading
 from tkinter import *
@@ -9,15 +7,16 @@ from functions.autorunStocks import autorun
 from functions.autorunStocks import end_auto_run
 from functions.runAll import run_all_stocks
 from functions.showPopularStocks import showPopularStocks
+from functions.databaseQuerying import establish_db_connection
+
 
 def get_combobox_values():
     # Connect to sqlite db
-    connectionPool = sqlite3.connect('new-data-stocks.db')
-    c = connectionPool.cursor()
+    c = establish_db_connection()
 
     # Collects all table names from the sqlite database and creates a tuple
-    c.execute(f'SELECT SearchedBy FROM AllStocks')
-    allStocksTuple = c.fetchall()
+    c[0].execute(f'SELECT SearchedBy FROM AllStocks')
+    allStocksTuple = c[0].fetchall()
 
     allStocks = []
 
@@ -36,26 +35,30 @@ def get_combobox_values():
 
 def build_page(lock):
     def clear_page(targetPriceInputField, stockInputField):
+        # Clears the target price input field
         targetPriceInputField.grid_forget()
 
-        # Target price input field
+        # Recreates the Target price input field
         targetPriceInputField = Entry(userInputFrame)
         targetPriceInputField.grid(row=3, column=1, sticky='nsew')
 
+        # Clears the stock input field
         stockInputField.grid_forget()
         # Stock input field
         try:
             # Gets values for the combobox drop down
             comboboxValues = get_combobox_values()
 
+            # Creates the stock input field as a combobox using the recently searched stocks collected from the database
             stockInputField = Combobox(userInputFrame, values=comboboxValues)
             stockInputField.grid(row=2, column=1)
 
         except OperationalError:
+            # If there are no recently searched stocks in the database, a combobox with no values will be created
             stockInputField = Combobox(userInputFrame)
             stockInputField.grid(row=2, column=1)
 
-    # Value for autorun set to false so autorun doesnt initiate
+    # Value for autorun set to false so autorun is deactivated
     autorunValue = False
 
     # Initialize tkinter widget
@@ -65,8 +68,6 @@ def build_page(lock):
     framePopularStocks = Frame(root)
     showPopularStocks(root)
     framePopularStocks.grid(row=1, column=1, sticky='nsew')
-
-
 
 
     ############################# Create frame for headers
@@ -95,14 +96,18 @@ def build_page(lock):
 
         stockInputField = Combobox(userInputFrame, values=comboboxValues)
         stockInputField.grid(row=1, column=1, sticky='nsew')
+        stockInputField.bind('<Return>', lambda event: collect_stock_info(stockInformationFrame, stockInputField, targetPriceInputField, lock))
 
     except OperationalError:
         stockInputField = Combobox(userInputFrame)
         stockInputField.grid(row=1, column=1, sticky='nsew')
+        stockInputField.bind('<Return>', lambda event: collect_stock_info(stockInformationFrame, stockInputField,targetPriceInputField, lock))
 
     # Target price input field
     targetPriceInputField = Entry(userInputFrame)
     targetPriceInputField.grid(row=2, column=1, sticky='nsew')
+    targetPriceInputField.bind('<Return>', lambda event: collect_stock_info(stockInformationFrame, stockInputField, targetPriceInputField, lock))
+
 
 
     ########################### Create frame for buttons
@@ -111,7 +116,7 @@ def build_page(lock):
 
     # Enter Button
     buttonEnter = Button(frameButtons, text='Enter', activeforeground='magenta', font=('Arial', 16),
-                         command=lambda: collect_stock_info(root, stockInputField, targetPriceInputField, lock))
+                         command=lambda: collect_stock_info(stockInformationFrame, stockInputField, targetPriceInputField, lock))
     buttonEnter.grid(row=1, column=1, sticky='nsew')
 
     # Clear Button
@@ -119,7 +124,7 @@ def build_page(lock):
     buttonClear.grid(row=1, column=2, sticky='nsew')
 
     # Run All Button
-    buttonRunAll = Button(frameButtons, text='Run All', activeforeground='magenta', font=('Arial', 16), command=lambda: run_all_stocks(root, lock))
+    buttonRunAll = Button(frameButtons, text='Run All', activeforeground='magenta', font=('Arial', 16), command=lambda: run_all_stocks(stockInformationFrame, lock))
     buttonRunAll.grid(row=1, column=3, sticky='nsew')
 
     # Auto Run button
@@ -133,6 +138,9 @@ def build_page(lock):
     buttonEndAutoRun.grid(row=2, column=2, sticky='nsew')
 
 
+    ########### Create frame for stock information
+    stockInformationFrame = Frame(root, bg='black')
+    stockInformationFrame.grid(row=3, column=1, columnspan=3, sticky='nsew')
 
     # Run tkinter root
     root.mainloop()

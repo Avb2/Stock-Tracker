@@ -1,24 +1,19 @@
-import sqlite3
 import threading
 from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
 from tkinter import *
-from functions.databaseQuerying import add_to_db
+from functions.databaseQuerying import add_to_db, establish_db_connection
 from functions.modelStocks import showPlot
+from functions.scrapeStock import create_stock_info_labels, request_and_parse
 
 
 def run_all_stocks(root, lock):
-    lock.acquire()
-
     def get_combobox_values():
         # Connect to sqlite db
-        connectionPool = sqlite3.connect('new-data-stocks.db')
-        c = connectionPool.cursor()
+        c = establish_db_connection()
 
         # Collects all table names from the sqlite database and creates a tuple
-        c.execute(f'SELECT SearchedBy FROM AllStocks')
-        allStocksTuple = c.fetchall()
+        c[0].execute(f'SELECT SearchedBy FROM AllStocks')
+        allStocksTuple = c[0].fetchall()
 
         allStocks = []
 
@@ -43,14 +38,15 @@ def run_all_stocks(root, lock):
         print(url)
 
         # Requests and bs4
-        request = requests.get(url)
-        result = BeautifulSoup(request.text, 'html.parser')
+        result = request_and_parse(url)
 
         try:
             # Find the stock name
             stockName = (result.find('div', {'class': 'zzDege'})).string
 
         except AttributeError:
+            # If the stock name cannot be found, the name of the stock and the url will be displayed in the
+            # console with a 'Name Not Found' message and will iterate to the next stock
             print('Name not found on google.com/finance')
             return
 
@@ -59,6 +55,7 @@ def run_all_stocks(root, lock):
 
         print(stockName, stockPrice)
 
+        # Sets searchedBy equal to the stockBeingScraped for readability
         SearchedBy = stockBeingScraped
 
         # Find the previous closing price
@@ -73,53 +70,7 @@ def run_all_stocks(root, lock):
             date = str(datetime.now())[:11]
             return date
 
-        def create_graph_button(root):
-            buttonGraphPrices = Button(root, text='Graph', command=lambda: showPlot(stockName))
-            buttonGraphPrices.grid(row=5 + index, column=5)
-
-        def create_stock_info_labels(root):
-            time = collect_time()
-            date = collect_date()
-
-            # Time/ Date Title label
-            timeDateTitleLabel = Label(root, text='Date/Time', borderwidth=1.5, relief='solid', font=('Arial', 16))
-            timeDateTitleLabel.grid(row=4, column=1, sticky='nsew')
-
-            # Stock Title label
-            stockTitleLabel = Label(root, text='Name', borderwidth=1.5, relief='solid', font=('Arial', 16))
-            stockTitleLabel.grid(row=4, column=2, sticky='nsew')
-
-            # Price Title label
-            priceTitleLabel = Label(root, text='Price', borderwidth=1.5, relief='solid', font=('Arial', 16))
-            priceTitleLabel.grid(row=4, column=3, sticky='nsew')
-
-            # Closing price Title label
-            closingPriceTitleLabel = Label(root, text='Closing Price', borderwidth=1.5, relief='solid',
-                                           font=('Arial', 16))
-            closingPriceTitleLabel.grid(row=4, column=4, sticky='nsew')
-
-            # Displays current time/date
-            currentTimeDateLabel = Label(root, text=f'{date} : {time}', font=('Arial', 16))
-            currentTimeDateLabel.grid(row=5 + index, column=1, sticky='nsew')
-
-            # Displays stock name
-            stockNameLabel = Label(root, text=f'{stockName}: ', font=('Arial', 16))
-            stockNameLabel.grid(row=5 + index, column=2, sticky='nsew')
-
-            # Displays stock price
-            stockPriceLabel = Label(root, text=stockPrice, font=('Arial', 16))
-            stockPriceLabel.grid(row=5 + index, column=3, sticky='nsew')
-
-            # Displays Previous closing price
-            stockPreviousClosingPriceLabel = Label(root, text=stockPreviousClosingPrice, font=('Arial', 16))
-            stockPreviousClosingPriceLabel.grid(row=5 + index, column=4, sticky='nsew')
-
-            # Adds padding between all rows of stock information
-            for num in range(index):
-                root.rowconfigure(num + 4, pad=10)
-
-        create_stock_info_labels(root)
-        create_graph_button(root)
+        create_stock_info_labels(root, stockName, stockPrice, stockPreviousClosingPrice, index)
 
         time = collect_time()
         date = collect_date()
@@ -129,10 +80,13 @@ def run_all_stocks(root, lock):
 
         return comboBoxValues
 
+    lock.acquire()
+
     comboBoxValues = get_combobox_values()
 
     for index, stockBeingScraped in enumerate(comboBoxValues):
         print(stockBeingScraped)
         scrape_stock_info_thread = threading.Thread(target=run_all_scrape_stocks, args=(index, stockBeingScraped))
         scrape_stock_info_thread.start()
+
     lock.release()

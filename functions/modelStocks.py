@@ -1,6 +1,4 @@
-import datetime
 from tkinter import *
-import sqlite3
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from functions.databaseQuerying import create_title_for_db, establish_db_connection
@@ -102,3 +100,5 @@ def showPlot(stock):
 
     get_all_prices(c[0])
     plotGraph(graphData[0], graphData[1], graphData[2])
+
+
