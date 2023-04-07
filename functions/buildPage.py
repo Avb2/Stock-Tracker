@@ -34,29 +34,15 @@ def get_combobox_values():
 
 
 def build_page(lock):
-    def clear_page(targetPriceInputField, stockInputField):
+    def clear_page(targetPriceInputField, stockInputField, stockInformationFrame):
         # Clears the target price input field
-        targetPriceInputField.grid_forget()
-
-        # Recreates the Target price input field
-        targetPriceInputField = Entry(userInputFrame)
-        targetPriceInputField.grid(row=3, column=1, sticky='nsew')
+        targetPriceInputField.delete(0, END)
 
         # Clears the stock input field
-        stockInputField.grid_forget()
-        # Stock input field
-        try:
-            # Gets values for the combobox drop down
-            comboboxValues = get_combobox_values()
+        stockInputField.delete(0, END)
 
-            # Creates the stock input field as a combobox using the recently searched stocks collected from the database
-            stockInputField = Combobox(userInputFrame, values=comboboxValues)
-            stockInputField.grid(row=2, column=1)
-
-        except OperationalError:
-            # If there are no recently searched stocks in the database, a combobox with no values will be created
-            stockInputField = Combobox(userInputFrame)
-            stockInputField.grid(row=2, column=1)
+        for widget in stockInformationFrame.winfo_children():
+            widget.grid_forget()
 
     # Value for autorun set to false so autorun is deactivated
     autorunValue = False
@@ -120,7 +106,7 @@ def build_page(lock):
     buttonEnter.grid(row=1, column=1, sticky='nsew')
 
     # Clear Button
-    buttonClear = Button(frameButtons, text='Clear', activeforeground='magenta', font=('Arial', 16), command=lambda: clear_page(targetPriceInputField, stockInputField))
+    buttonClear = Button(frameButtons, text='Clear', activeforeground='magenta', font=('Arial', 16), command=lambda: clear_page(targetPriceInputField, stockInputField, stockInformationFrame))
     buttonClear.grid(row=1, column=2, sticky='nsew')
 
     # Run All Button
