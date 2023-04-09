@@ -1,33 +1,5 @@
-import sqlite3
 from sqlite3 import OperationalError
-
-
-def create_title_for_db(name):
-    if ' ' in name:
-        name = name.replace(' ', '')
-    if '&' in name:
-        name = name.replace('&', '')
-    if '.' in name:
-        name = name.replace('.', '')
-    if ',' in name:
-        name = name.replace(',', '')
-    if '/' in name:
-        name = name.replace('/', '')
-    if '(' in name:
-        name = name.replace('(', '')
-    if ')' in name:
-        name = name.replace(')', '')
-    if '-' in name:
-        name = name.replace('-', '')
-    title = name
-    return title
-
-
-def establish_db_connection():
-    # Connect to sqlite db
-    connectionPool = sqlite3.connect('new-data-stocks.db')
-    c = connectionPool.cursor()
-    return c, connectionPool
+from functions.universalFunctions import create_title_for_db, establish_db_connection
 
 
 def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
@@ -137,24 +109,30 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
         except ValueError:
             print("You did not include a target price.")
 
+    # Establish a connection with the all stocks database
     c = establish_db_connection()
 
     # Creates title for db table
     title = create_title_for_db(name)
     print(title)
 
+    # Adds the stock info to the AllStocks database table
     add_to_all_stocks_db()
 
+    # Adds the stock info to the specified database table
     add_to_specified_stock_db()
 
+    # Adds the stock info the Watchlist table
     add_to_watchlist_db()
 
+    # Close the connection with the database
     c[1].close()
 
 
 def add_to_db_for_sectors(sector, name, date, time, priceFloat):
     def add_to_specified_stock_db():
-        establish_db_connection()
+        # Establish a connection with the all stocks database
+        c = establish_db_connection()
 
         # Use a try/ except statement to test if a table with the same name already exists. If the table exists, the values will be added to the already existing table.
         try:
@@ -186,5 +164,5 @@ def add_to_db_for_sectors(sector, name, date, time, priceFloat):
         # 'Finished' will be printed when the values have been added.
         print('Values have been added to the database')
 
-    c = establish_db_connection()
+    # Adds the stock information to the specified database table
     add_to_specified_stock_db()
