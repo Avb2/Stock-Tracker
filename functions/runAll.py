@@ -1,14 +1,12 @@
 import threading
 from datetime import datetime
-from tkinter import *
 from functions.databaseQuerying import add_to_db, establish_db_connection
-from functions.modelStocks import showPlot
 from functions.scrapeStock import create_stock_info_labels, request_and_parse
 
 
 def run_all_stocks(root, lock):
     def get_combobox_values():
-        # Connect to sqlite db
+        # Connect to the new-data-stocks.db database file
         c = establish_db_connection()
 
         # Collects all table names from the sqlite database and creates a tuple
@@ -82,8 +80,10 @@ def run_all_stocks(root, lock):
 
     lock.acquire()
 
+    # Collect values for the drop-down menu (combobox)
     comboBoxValues = get_combobox_values()
 
+    # Run a thread for eaxch stock being scraped
     for index, stockBeingScraped in enumerate(comboBoxValues):
         print(stockBeingScraped)
         scrape_stock_info_thread = threading.Thread(target=run_all_scrape_stocks, args=(index, stockBeingScraped))

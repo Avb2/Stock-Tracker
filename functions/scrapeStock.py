@@ -1,33 +1,14 @@
 import threading
-from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
-from tkinter import *
+from tkinter import Label
 from functions.databaseQuerying import add_to_db
 from functions.databaseQuerying import add_to_db_for_sectors
 from functions.modelStocks import showPlot
-
-
-def collect_time():
-    # Get timestamp using datetime package
-    time = str(datetime.now())[11:16]
-    return time
-
-
-def collect_date():
-    # Gets the date using the datetime package
-    date = str(datetime.now())[:11]
-    return date
-
-
-def request_and_parse(url):
-    # Requests and bs4
-    request = requests.get(url)
-    result = BeautifulSoup(request.text, 'html.parser')
-    return result
+from functions.universalFunctions import collect_time, collect_date, request_and_parse, get_stock_name, get_stock_price, \
+    change_searchedBy_to_lower, collect_and_split_stock, collect_and_split_target_price
 
 
 def create_stock_info_labels(root, stockName, stockPrice, stockPreviousClosingPrice, index):
+    # Get the time and date
     time = collect_time()
     date = collect_date()
 
@@ -181,17 +162,17 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
             'TFC'
         ]
 
-        # If the user inputs "s tech" it will scraped the tech sector list of stocks
+        # If the user inputs "s tech" it will scrape the tech sector list of stocks
         if stockInputField.get() == 's tech':
             scrape_sector_thread = threading.Thread(target=scrape_sector_list, args=(techSector,))
             scrape_sector_thread.start()
 
-        # If the user inputs "s real estate" it will scraped the real estate sector list of stocks
+        # If the user inputs "s real estate" it will scrape the real estate sector list of stocks
         elif stockInputField.get() == 's real estate':
             scrape_sector_thread = threading.Thread(target=scrape_sector_list, args=(realEstate,))
             scrape_sector_thread.start()
 
-        # If the user inputs "s finance" it will scraped the finance sector list of stocks
+        # If the user inputs "s finance" it will scrape the finance sector list of stocks
         elif stockInputField.get() == 's finance':
             scrape_sector_thread = threading.Thread(target=scrape_sector_list, args=(finance,))
             scrape_sector_thread.start()
@@ -203,45 +184,40 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
         # Requests and bs4
         result = request_and_parse(url)
 
-        try:
-            # Find the stock name
-            stockName = (result.find('div', {'class': 'zzDege'})).string
-
-        except AttributeError:
-            print(stockBeingScraped, url)
-            print('Name not found on google.com/finance')
-            return
+        # Find the stock name
+        stockName = get_stock_name(result)
 
         # Find the stock price
-        stockPrice = (result.find('div', {'class': 'YMlKec fxKbKc'})).string
+        stockPrice = get_stock_price(result)
 
         print(stockName, stockPrice)
 
-        SearchedBy = []
-        # What the user searched the stock by
-        for theStock in listOfStocksBeingScraped:
-            SearchedBy += [theStock.lower()]
+        SearchedByNames = []
+
+        # Converts the SearchedBy value to lowercase for uniformity
+        SearchedBy = change_searchedBy_to_lower(listOfStocksBeingScraped, SearchedByNames)
 
         # Find the previous closing price
         stockPreviousClosingPrice = result.find('div', {'class': 'P6K39c'}).string
 
+        # Create labels for the stock information
         create_stock_info_labels(root, stockName, stockPrice, stockPreviousClosingPrice, index)
 
+        # Get the time and date
         theTime = collect_time()
         date = collect_date()
 
+        # Add the values to the specified database table in the new-data-stocks.db file
         add_to_db(SearchedBy=SearchedBy[index], name=stockName, priceFloat=round(float(stockPrice.replace('$', '')), 2),
                   date=date, time=theTime, targetPrice=listOfTargetPrices[index])
 
     lock.acquire()
 
     # Collect stocks from input field
-    listOfStocksBeingScraped = stockInputField.get()
-    listOfStocksBeingScraped = listOfStocksBeingScraped.split(',')
+    listOfStocksBeingScraped = collect_and_split_stock(stockInputField)
 
     # Collect target prices from input field
-    listOfTargetPrices = targetPriceInputField.get()
-    listOfTargetPrices = listOfTargetPrices.split(',')
+    listOfTargetPrices = collect_and_split_target_price(targetPriceInputField)
 
     # If the user searches by sectors using the s keywords, the scrape stock by sectors function will be called
     if stockInputField.get() == 's tech' or stockInputField.get() == 's real estate' or stockInputField.get() == 's finance':
@@ -252,7 +228,5 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
         for index, stockBeingScraped in enumerate(listOfStocksBeingScraped):
             scrape_stock_info_thread = threading.Thread(target=scrape_stock_info, args=(stockBeingScraped, index))
             scrape_stock_info_thread.start()
-            # Update widget size whenever new elements are added
-
 
         lock.release()
