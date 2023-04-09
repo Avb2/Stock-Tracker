@@ -1,6 +1,6 @@
 from sqlite3 import OperationalError
 import threading
-from tkinter import *
+from tkinter import Tk, Label, Frame, Entry, Button, END
 from tkinter.ttk import Combobox
 from functions.scrapeStock import collect_stock_info
 from functions.autorunStocks import autorun
@@ -20,7 +20,7 @@ def get_combobox_values():
 
     allStocks = []
 
-    # Adds the value to the drop down box if the value is not already on the list
+    # Adds the value to the drop-down box if the value is not already on the list
     for COUNT, x in enumerate(allStocksTuple):
         if x not in allStocks:
             allStocks += [x]
@@ -41,6 +41,7 @@ def build_page(lock):
         # Clears the stock input field
         stockInputField.delete(0, END)
 
+        # Clears the stock information frame
         for widget in stockInformationFrame.winfo_children():
             widget.grid_forget()
 
