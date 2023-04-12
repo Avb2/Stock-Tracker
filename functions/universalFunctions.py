@@ -187,19 +187,21 @@ def get_combobox_values():
     c[0].execute(f'SELECT SearchedBy FROM AllStocks')
     allStocksTuple = c[0].fetchall()
 
+    c[0].execute(f'SELECT GroupName FROM AllGroups')
+    allGroupsTuple = c[0].fetchall()
+
     allStocks = []
 
     # Adds the value to the drop down box if the value is not already on the list
-    for COUNT, x in enumerate(allStocksTuple):
+    for x in allStocksTuple:
         if x not in allStocks:
             allStocks += [x]
 
-    # Converted tuple to list
-    comboboxValuesList = []
-    for values in allStocks:
-        comboboxValuesList += list(values)
+    for y in allGroupsTuple:
+        if y not in allStocks:
+            allStocks += [y]
 
-    return comboboxValuesList
+    return allStocks
 
 
 # Get requests and parse with requests and bs4 packages
@@ -221,7 +223,17 @@ def change_searchedBy_to_lower(listOfStocksBeingScraped, SearchedByNames):
 # Selects the random list of stocks to be shown at the top of the tkinter widget
 def pickStocksToShow(numberOfStocks):
     popularStocks = [
+        'AAC',
+        'AAL',
+        'AAON',
         'AAPL',
+        'AAT',
+        'AB',
+        'ABB',
+        'ABBV',
+        'ABCB',
+        'ABCM',
+        'ABNB',
         'MSFT',
         'GOOG',
         'GOOGL',
@@ -267,3 +279,5 @@ def pickStocksToShow(numberOfStocks):
     # Selects a specified number of non repeating, random stocks from the popular stocks list to be displayed at the top of tkinter widget
     stocksChosenToShow = list(random.sample(popularStocks, k=numberOfStocks))
     return stocksChosenToShow
+
+
