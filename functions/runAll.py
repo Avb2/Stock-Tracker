@@ -45,7 +45,7 @@ def run_all_stocks(root, lock):
         except AttributeError:
             # If the stock name cannot be found, the name of the stock and the url will be displayed in the
             # console with a 'Name Not Found' message and will iterate to the next stock
-            print('Name not found on google.com/finance')
+            print(f'{stockBeingScraped} not found on google.com/finance')
             return
 
         # Find the stock price
