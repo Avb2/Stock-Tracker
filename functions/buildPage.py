@@ -8,29 +8,8 @@ from functions.autorunStocks import end_auto_run
 from functions.runAll import run_all_stocks
 from functions.showPopularStocks import showPopularStocks
 from functions.databaseQuerying import establish_db_connection
-
-
-def get_combobox_values():
-    # Connect to sqlite db
-    c = establish_db_connection()
-
-    # Collects all table names from the sqlite database and creates a tuple
-    c[0].execute(f'SELECT SearchedBy FROM AllStocks')
-    allStocksTuple = c[0].fetchall()
-
-    allStocks = []
-
-    # Adds the value to the drop-down box if the value is not already on the list
-    for COUNT, x in enumerate(allStocksTuple):
-        if x not in allStocks:
-            allStocks += [x]
-
-    # Converted tuple to list
-    comboboxValuesList = []
-    for values in allStocks:
-        comboboxValuesList += list(values)
-
-    return comboboxValuesList
+from functions.settings import open_settings
+from functions.universalFunctions import get_combobox_values
 
 
 def build_page(lock):
@@ -50,6 +29,8 @@ def build_page(lock):
 
     # Initialize tkinter widget
     root = Tk()
+
+    root.title('Stock Tracker')
 
     ############################ Create frame for popular stocks
     framePopularStocks = Frame(root)
@@ -124,10 +105,16 @@ def build_page(lock):
     buttonEndAutoRun = Button(frameButtons, text='End', activeforeground='magenta', font=('Arial', 16), command=lambda: end_auto_run())
     buttonEndAutoRun.grid(row=2, column=2, sticky='nsew')
 
+    # Settings Button
+    buttonSettings = Button(frameButtons, text='Settings', activeforeground='magenta', font=('Arial', 16), command=lambda: open_settings(root))
+    buttonSettings.grid(row=2, column=3, sticky='nsew')
 
     ########### Create frame for stock information
     stockInformationFrame = Frame(root, bg='black')
     stockInformationFrame.grid(row=3, column=1, columnspan=3, sticky='nsew')
+
+
+
 
     # Run tkinter root
     root.mainloop()

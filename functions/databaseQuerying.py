@@ -18,7 +18,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
 
         # If the table already exists, the below message will be printed in the terminal
         except OperationalError:
-            print('Operational Error: Could not create table.')
+            print('Operational Error: Could not create All Stocks table, it already exists.')
 
         # Adds the values to the All Stocks database
         c[0].execute(f'''INSERT INTO AllStocks VALUES
@@ -49,7 +49,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
 
         # If the table already exists, an error message will be displayed in the terminal
         except OperationalError:
-            print('Operational Error: Could not create table, it already exists.')
+            print(f'Operational Error: Could not create {title} table, it already exists.')
 
         # Adds the values to its corresponding database
         c[0].execute(f'''INSERT INTO {title} VALUES
@@ -63,7 +63,7 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
         c[1].commit()
 
         # 'Finished' will be printed when the values have been added.
-        print('Values have been added to the database')
+        print(f'Values have been added to the {title} table')
 
     def add_to_watchlist_db():
         cursor = c[0]
@@ -149,7 +149,7 @@ def add_to_db_for_sectors(sector, name, date, time, priceFloat):
 
         # If the table already exists, an error message will be displayed in the terminal
         except OperationalError:
-            print('Operational Error: Could not create table, it already exists.')
+            print(f"Operational Error: Could not create {sector.replace(' ', '')}table, it already exists.")
 
         # Adds the values to its corresponding database
         c[0].execute(f'''INSERT INTO {sector.replace(' ', '')} VALUES
@@ -162,7 +162,7 @@ def add_to_db_for_sectors(sector, name, date, time, priceFloat):
         c[1].commit()
 
         # 'Finished' will be printed when the values have been added.
-        print('Values have been added to the database')
+        print(f"Values have been added to the {sector.replace(' ', '')} database")
 
     # Adds the stock information to the specified database table
     add_to_specified_stock_db()

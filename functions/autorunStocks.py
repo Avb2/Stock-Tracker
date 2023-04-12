@@ -6,6 +6,7 @@ from functions.databaseQuerying import establish_db_connection
 from functions.scrapeStock import request_and_parse
 from functions.universalFunctions import collect_time, collect_date, get_stock_name, get_stock_price, \
     collect_and_split_stock, collect_and_split_target_price
+from functions.settings import open_settings
 
 
 def end_auto_run():
