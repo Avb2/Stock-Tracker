@@ -2,8 +2,9 @@ from sqlite3 import OperationalError
 from tkinter import Frame, Label, Button, Entry
 from functions.universalFunctions import establish_db_connection, create_title_for_db, collect_and_split_stock
 
+
 def close_settings(settingsFrame):
-        settingsFrame.grid_forget()
+    settingsFrame.grid_forget()
 
 
 def open_settings(root):
@@ -58,7 +59,7 @@ def open_settings(root):
                                             "{stockName}"
                                             )''')
             c[1].commit()
-########################
+            ########################
 
             c[0].execute(f'''INSERT INTO AllGroups VALUES
                                                         (
@@ -85,8 +86,33 @@ def open_settings(root):
         for name in stocksInGroupNames:
             add_values_to_group_table(name)
 
+    def delete_groups():
+        # Collect stocks in groups and name of tne stock group
+        stockGroupInputs = collect_group_stock_inputs()
 
+        stockGroupName = create_title_for_db(stockGroupInputs[0])
 
+        stocksInGroupNames = stockGroupInputs[1]
+
+        print(stockGroupName, stocksInGroupNames)
+
+        # Connect to db
+        db_connection = establish_db_connection()
+
+        conn = db_connection[0]
+
+        c = db_connection[1]
+
+        # Find the stock name in the All Groups database table and remove it
+        c.execute('DELETE FROM AllGroups WHERE GroupName=?', (stockGroupName,))
+
+        # Find the database table that has the same title as the stock group name being searched and remove it from the database
+        c.execute(f'DROP TABLE IF EXISTS {stockGroupName}')
+        print(f'{stockGroupName} has been deleted')
+
+        # Commit the query and close the connection
+        c.commit()
+        conn.close()
 
     ############### Create frame for settings
     settingsFrame = Frame(root, borderwidth=2, relief='solid', pady=3)
@@ -116,7 +142,9 @@ def open_settings(root):
     stockEntryInput.grid(row=3, column=2, columnspan=2, sticky='nsew')
 
     # Stock group enter button
-    buttonEnterStockGroups = Button(settingsFrame, text='Enter', command=lambda: add_stocks_to_groups())
-    buttonEnterStockGroups.grid(row=4, column=1, columnspan=3, sticky='nsew')
+    buttonEnterStockGroups = Button(settingsFrame, text='Create', activeforeground='magenta', command=lambda: add_stocks_to_groups())
+    buttonEnterStockGroups.grid(row=4, column=3, sticky='nsew')
 
-
+    # Stock group delete button
+    buttonDeleteStockGroups = Button(settingsFrame, text='Delete', activeforeground='magenta', command=lambda: delete_groups())
+    buttonDeleteStockGroups.grid(row=4, column=1, columnspan=2, sticky='nsew')
