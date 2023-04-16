@@ -1,6 +1,7 @@
 from sqlite3 import OperationalError
 from tkinter import Frame, Label, Button, Entry
-from functions.universalFunctions import establish_db_connection, create_title_for_db, collect_and_split_stock
+from tkinter.ttk import Combobox
+from functions.universalFunctions import establish_db_connection, create_title_for_db, collect_and_split_stock, get_combobox_values_for_settings
 
 
 def close_settings(settingsFrame):
@@ -131,7 +132,8 @@ def open_settings(root):
     stockGroupTitle.grid(row=2, column=1, sticky='nsew')
 
     # Input field where the user inputs the name of the group they are creating
-    stockGroupInput = Entry(settingsFrame)
+    allGroups = get_combobox_values_for_settings()
+    stockGroupInput = Combobox(settingsFrame, values=allGroups)
     stockGroupInput.grid(row=2, column=2, columnspan=2, sticky='nsew')
 
     ## Stock input field
