@@ -23,12 +23,12 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
         # Adds the values to the All Stocks database
         c[0].execute(f'''INSERT INTO AllStocks VALUES
                         (
-                        "{SearchedBy.replace(' ', '')}",
-                        "{name}",
-                        "{date}",
-                        "{time}",
-                        "${priceFloat}"
-                        )''')
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?
+                        )''', (SearchedBy.replace(' ', ''), name, date, time, f'${priceFloat}'))
         c[1].commit()
 
     def add_to_specified_stock_db():
@@ -54,12 +54,12 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
         # Adds the values to its corresponding database
         c[0].execute(f'''INSERT INTO {title} VALUES
                         (
-                        "{SearchedBy.replace(' ', '')}",
-                        "{name}",
-                        "{date}",
-                        "{time}",
-                        "${priceFloat}"
-                        )''')
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?
+                        )''', (SearchedBy.replace(' ', ''), name, date, time, f'${priceFloat}'))
         c[1].commit()
 
         # 'Finished' will be printed when the values have been added.
@@ -88,14 +88,14 @@ def add_to_db(SearchedBy, name, date, time, priceFloat, targetPrice):
                     print('Operational Error: Could not create Watchlist.')
 
                 # Adds values to the Watchlist database if the target price is greater than the current price
-                cursor.execute(f'''INSERT INTO Watchlist VALUES
+                cursor.execute(''''INSERT INTO Watchlist VALUES
                     (
-                    "{SearchedBy.replace(' ', '')}",
-                    "{name}",
-                    "{date}",                    
-                    "{time}",
-                    "${priceFloat}"
-                    )''')
+                    ?,
+                    ?,
+                    ?,                    
+                    ?,
+                    ?,
+                    )''', (SearchedBy.replace(' ', ''), name, date, time, f'${priceFloat}'))
 
                 connection.commit()
 
@@ -154,11 +154,11 @@ def add_to_db_for_sectors(sector, name, date, time, priceFloat):
         # Adds the values to its corresponding database
         c[0].execute(f'''INSERT INTO {sector.replace(' ', '')} VALUES
                         (
-                        "{name}",
-                        "{date}",
-                        "{time}",
-                        "${priceFloat}"
-                        )''')
+                        ?,
+                        ?,
+                        ?,
+                        ?
+                        )''', (name, date, time, f'${priceFloat}'))
         c[1].commit()
 
         # 'Finished' will be printed when the values have been added.
