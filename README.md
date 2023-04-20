@@ -3,7 +3,8 @@
 <div><b>Good afternoon, traders!</b><div><br>
 <p id='intro'>Stock Tracker is a program that can help you on your day-to-day trading by allowing you to easily track & model stock prices so you can buy at the right time! The data gathered will be displayed to the user in a database table, and current information will be shown in the Tkinter widget. If the stock is lower than the set target price, a new table is created called 'watchlist' and the stocks data is added to it. This allows the user to quickly know which stocks have reached the target prices.</p>
 </body>
-
+<br>
+  
 <body>
 <div>
   <h2>Instructions</h2>
@@ -18,6 +19,9 @@
     <li>Models will be created and available to be viewed by clicking the name of the stock displayed in the stock information frame</li>
   </ul>
   </div>
+  
+  <br>
+  
   <div>
   <h2>Using Auto Run feature </h2>
   <ul>
@@ -33,6 +37,9 @@
     <p><b>NOTE: You must use an outlook email to send the emails, gmail will not work</b></p>
    </ul>
    </div>
+  
+  <br>
+  
   <div>
   <h2>Using Run All feature </h2>
   <ul>
@@ -44,6 +51,8 @@
     <p><b>NOTE: Once you start the Run All feature, you cannot end it until it is complete</b></p>
   </ul>
   </div>
+  
+  <br>
   
   <div>
   <h2>Creating stock portfoilios</h2>
@@ -65,6 +74,9 @@
       <li>The stock information will be added to the AllStocks and the specified stocks database table</li>
     </ul>
     </div>
+  
+  <br>
+  
  <div>
   <h2>Searching with sectors</h2>
   <ul>
@@ -73,6 +85,8 @@
     <li>Click the 'Enter' Button</li>
    </ul>
   </div>
+  
+  <br>
   
   <div>
   <h2>Viewing Graphs</h2>
@@ -84,10 +98,12 @@
   <li>A predefined list of popular stocks in the specified sector will be displayed to the user in the tkinter GUI</li>
   <li>The stock information will be added to that sectors database table</li>
   </ul>
-    <br><br>
+    <br>
   <p><b>NOTE: Data displayed on the graph will only be data that has been collected when you run that specific stock. Unless you are using the Auto Run feature and letting the program run, stocks will have to be searched manually.</b></p>
   </div>
-   
+  
+   <br>
+  
    <div>
   <h2>Under the hood</h2>
   <ul>
