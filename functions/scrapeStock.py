@@ -135,9 +135,12 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
                 theTime = collect_time()
                 date = collect_date()
 
-                # Adds the information to the specified table in the database file
+                # Adds the information to the specified sector's table in the database file
                 add_to_db_for_sectors(stockInputField.get(), stockName, date, theTime,
                                       round(float(stockPrice.replace('$', '')), 2))
+
+                # Adds the information to the stock information table
+                add_to_db(SearchedBy=stockName.lower(), name=stockName, date=date, time=theTime, priceFloat=round(float(stockPrice.replace('$', '')), 2), targetPrice=0)
 
         # List of stocks for searching by sectors
         techSector = [
@@ -236,6 +239,7 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
     # Collects the groupNames from the AllGroups table in the new-data-stocks database table
     c[0].execute('SELECT name FROM sqlite_master WHERE type="table"')
     allTableNames = c[0].fetchall()
+    # Converts from tuple to list
     allTableNames = [x[0] for x in allTableNames]
 
     print(allTableNames)
@@ -244,9 +248,12 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
         if tableName == listOfStocksBeingScraped[0]:
             print(tableName, listOfStocksBeingScraped[0])
 
+            # Collects the names from the table names and converts them into a list
             c[0].execute(f'SELECT Name FROM {tableName}')
             stocksInTable = c[0].fetchall()
             stocksInTable = [stock[0] for stock in stocksInTable]
+
+            # Creates a thread and scrapes the stock information
             for index, stockInTable in enumerate(stocksInTable):
                 scrape_stock_info_thread = threading.Thread(target=scrape_stock_info, args=(stockInTable, index))
                 scrape_stock_info_thread.start()
