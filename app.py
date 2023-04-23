@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Api, Resource
 import sqlite3
+from sqlite3 import OperationalError
 
 app = Flask(__name__)
 
@@ -9,8 +10,11 @@ api = Api(app)
 conn = sqlite3.connect('new-data-stocks.db')
 c = conn.cursor()
 
-data = c.execute('SELECT SearchedBy, Name, Price, Date, Time FROM AllStocks')
-data = data.fetchall()
+try:
+    data = c.execute('SELECT SearchedBy, Name, Price, Date, Time FROM AllStocks')
+    data = data.fetchall()
+except OperationalError:
+    pass
 
 
 dataFormatted = {}
