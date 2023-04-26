@@ -5,8 +5,9 @@ from functions.databaseQuerying import add_to_db
 from functions.databaseQuerying import establish_db_connection
 from functions.scrapeStock import request_and_parse
 from functions.universalFunctions import collect_time, collect_date, get_stock_name, get_stock_price, \
-    collect_and_split_stock, collect_and_split_target_price
+    collect_and_split_stock, collect_and_split_target_price, get_combobox_values
 from functions.settings import open_settings
+
 
 
 def end_auto_run():
@@ -77,7 +78,7 @@ def autorun(stockInputField, targetPriceInputField):
             if float(stockPrice.replace('$', '')) <= float(listOfTargetPrices[index]) and stockName not in listOfSentEmails:
                 print(float(stockPrice.replace('$', '')), float(listOfTargetPrices[index]))
                 send_email_if_price_greater_than_tp(listOfSentEmails)
-        except AttributeError:
+        except (AttributeError, IndexError):
             return
 
         # Gets time and date
@@ -103,17 +104,27 @@ def autorun(stockInputField, targetPriceInputField):
     # Collect stocks from input field
     listOfStocksBeingScraped = collect_and_split_stock(stockInputField)
 
-    # Collect target prices from input field
-    listOfTargetPrices = collect_and_split_target_price(targetPriceInputField)
+    if listOfStocksBeingScraped[0] == 'all':
+        # Collect target prices from input field
+        comboBoxValues = get_combobox_values()
+        listOfStocksBeingScraped = [stock[0] for stock in comboBoxValues]
+        listOfTargetPrices = [0 for _ in comboBoxValues]
+
+
+    else:
+        # Collect target prices from input field
+        listOfTargetPrices = collect_and_split_target_price(targetPriceInputField)
 
     # When an email is sent, the stock is added to this list so no more emails will be sent about that particular stock to reduce spamming
     listOfSentEmails = []
 
     while autorunValue:
+        print(listOfStocksBeingScraped)
         # While autorun is active, threads will be created to webscrape the stocks simultaneously using the auto_run_scrape_stock_info function
         for index, stockBeingScraped in enumerate(listOfStocksBeingScraped):
             autoRunThread_scrape = threading.Thread(target=auto_run_scrape_stock_info, args=(stockBeingScraped, index))
             autoRunThread_scrape.start()
+            time.sleep(.1)
 
         # Waits 10 minutes to scrape again
-        time.sleep(600)
+        time.sleep(60)
