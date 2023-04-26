@@ -3,6 +3,7 @@ from functions.databaseQuerying import establish_db_connection
 from functions.universalFunctions import get_all_prices, plotGraph
 
 
+# Shows the graph containing price data
 def showPlot(stock):
 
     # create a new tkinter root that will display the graph

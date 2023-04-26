@@ -7,7 +7,6 @@ from functions.autorunStocks import autorun
 from functions.autorunStocks import end_auto_run
 from functions.runAll import run_all_stocks
 from functions.showPopularStocks import showPopularStocks
-from functions.databaseQuerying import establish_db_connection
 from functions.settings import open_settings
 from functions.universalFunctions import get_combobox_values
 

@@ -201,12 +201,10 @@ def collect_stock_info(root, stockInputField, targetPriceInputField, lock):
             'C',
             'MBFJF',
             'BNPQY',
-            'IBN',
             'UBS',
             'BMO',
             'BNS',
             'PNC',
-            'ISNPY',
             'TFC'
         ]
 

@@ -204,6 +204,22 @@ def get_combobox_values():
     return allStocks
 
 
+def get_combobox_values_for_settings():
+    # Connect to sqlite db
+    c = establish_db_connection()
+
+    c[0].execute(f'SELECT GroupName FROM AllGroups')
+    allGroupsTuple = c[0].fetchall()
+
+    allStocks = []
+
+    # Adds the value to the drop down box if the value is not already on the list
+    for y in allGroupsTuple:
+        if y not in allStocks:
+            allStocks += [y]
+
+    return allStocks
+
 # Get requests and parse with requests and bs4 packages
 def request_and_parse(url):
     # Requests and bs4
