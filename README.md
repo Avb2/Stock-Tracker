@@ -30,8 +30,14 @@
     <li>Press 'Auto Run' button</li>
     <li>Click the 'End' button to end the Auto Run thread</li>
     <h2>Output:</h2>
-    <li>The stock you have inputted will be scraped every 10 minutes. If the price of the stock is less than the target price, an email will be sent to you.</li>
-    <br><br>
+    <li>The stock you have inputted will be scraped every 10 minutes. If the price of the stock is less than the target price, an email will be sent to the specified Outlook email address.</li>
+    <br>
+    <h2>Auto Running all stocks</h2>
+    <li>Input 'all' into the Stocks input field</li>
+    <li>Click the 'Auto Run' button</li>
+    <h2>Output:</h2>
+    <li>All stocks in the AllStocks table in the new-data-stocks.db will be webscraped and the information will be added to the specified stocks table, as well as the AllStocks table</li>
+    <br>
     <p><b>NOTE: You can still scrape other stocks while auto run is active</b></p>
     <br>
     <p><b>NOTE: You must use an outlook email to send the emails, gmail will not work</b></p>
